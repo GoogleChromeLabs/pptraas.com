@@ -53,6 +53,19 @@ app.get("/pdf", async function (request, response) {
   response.send(pdf);
 });
 
+app.get("/content", async function (request, response) {
+  const url = request.query.url;
+  const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
+
+  const page = await browser.newPage();
+  await page.goto(url);
+  const content = await page.content();
+  await browser.close();
+  
+  response.type('text/html');
+  response.send(pdf);
+});
+
 app.get("/trace", async function (request, response) {
   const url = request.query.url;
   const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
