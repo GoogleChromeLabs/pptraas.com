@@ -23,6 +23,7 @@ app.get("/screenshot", async function (request, response) {
   const screenshot = await page.screenshot();
   await browser.close();
 
+  response.type('png');
   response.send(screenshot);
 });
 
@@ -35,6 +36,7 @@ app.get("/metrics", async function (request, response) {
   const metrics = await page.metrics();
   await browser.close();
 
+  response.type('application/json');
   response.send(JSON.stringify(metrics));
 });
 
@@ -47,6 +49,7 @@ app.get("/pdf", async function (request, response) {
   const pdf = await page.pdf();
   await browser.close();
   
+  response.type('application/pdf');
   response.send(pdf);
 });
 
@@ -61,6 +64,7 @@ app.get("/trace", async function (request, response) {
   await page.tracing.stop();
   await browser.close();
   
+  response.type('application/json');
   response.sendFile(filename);
 });
 
