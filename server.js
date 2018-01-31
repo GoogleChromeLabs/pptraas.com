@@ -63,7 +63,7 @@ app.get("/content", async function (request, response) {
   await browser.close();
   
   response.type('text/html');
-  response.send(pdf);
+  response.send(content);
 });
 
 app.get("/trace", async function (request, response) {
