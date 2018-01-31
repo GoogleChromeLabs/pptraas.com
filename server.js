@@ -7,7 +7,7 @@ const randomUUID = require('random-uuid');
 app.all('*', function enableCors(request, response, next) {
   response.setHeader('Access-Control-Allow-Origin', '*');
 
-  if(request.url.startsWith('https://puppeteeraas.com')) {
+  if(request.hostname == 'puppeteeraas.com') {
     return res.status(500).send({ error: 'Error calling self' });
   }
   
