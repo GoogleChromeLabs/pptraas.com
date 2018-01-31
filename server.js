@@ -4,7 +4,7 @@ const puppeteer = require('puppeteer');
 
 const randomUUID = require('random-uuid');
 
-app.all('*', function(request, response, next) {
+app.all('*', function enableCors(request, response, next) {
   response.setHeader('Access-Control-Allow-Origin', '*');
   
   return next();
@@ -40,7 +40,7 @@ app.get("/trace", async function (request, response) {
   const filename = `/tmp/trace-${randomUUID()}.json`;
 
   const page = await browser.newPage();
-  await page.tracing.start({path: filename});
+  await page.tracing.start({path: filename, screenshots: true});
   await page.goto(url);
   await page.tracing.stop();
   await browser.close();
@@ -56,6 +56,6 @@ app.get("/test", async function (request, response) {
   response.send("OK")
 });
 
-var listener = app.listen(8084, function () {
+const listener = app.listen(8084, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
