@@ -26,6 +26,18 @@ app.get("/screenshot", async function (request, response) {
   response.send(screenshot);
 });
 
+app.get("/metrics", async function (request, response) {
+  const url = request.query.url;
+
+  const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
+  const page = await browser.newPage();
+  await page.goto(url);
+  const metrics = await page.metrics();
+  await browser.close();
+
+  response.send(JSON.stringify(metrics));
+});
+
 app.get("/pdf", async function (request, response) {
   const url = request.query.url;
   const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
