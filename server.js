@@ -8,7 +8,7 @@ app.all('*', function enableCors(request, response, next) {
   response.setHeader('Access-Control-Allow-Origin', '*');
 
   if(request.query.url.startsWith('https://puppeteeraas.com')) {
-    return res.status(500).send({ error: 'Error calling self' });
+    return response.status(500).send({ error: 'Error calling self' });
   }
   
   return next();
