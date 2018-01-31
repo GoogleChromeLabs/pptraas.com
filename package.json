@@ -1,7 +1,7 @@
 {
   "name": "puppets",
-  "version": "0.0.1",
-  "description": "What am I about?",
+  "version": "0.0.2",
+  "description": "Puppeteer as a service",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -15,7 +15,7 @@
     "node": "8.x"
   },
   "repository": {
-    "url": "https://glitch.com/edit/#!/welcome-project"
+    "url": "https://github.com/PaulKinlan/puppeteeraas.com"
   },
   "license": "MIT",
   "keywords": [
