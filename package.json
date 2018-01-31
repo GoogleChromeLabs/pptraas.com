@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "deploy": "NOW_DEPLOY_URL=$(now --token $NOW_TOKEN --docker)",
+    "deploy": "now --token $NOW_TOKEN --docker",
     "alias": "now alias --token=$NOW_TOKEN"
   },
   "dependencies": {
