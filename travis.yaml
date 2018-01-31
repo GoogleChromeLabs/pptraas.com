@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+- node
+cache: npm
+script: npm run deploy
+after_script: npm run alias
+addons:
+  ssh_known_hosts: 
+  - github.com
+  - 192.30.253.112
+  - 192.30.253.113
