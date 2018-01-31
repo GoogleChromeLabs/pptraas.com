@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "express": "*",
+    "now": "^9.2.7",
     "puppeteer": "*",
     "random-uuid": "*"
   },
