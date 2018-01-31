@@ -23,7 +23,6 @@ app.get("/screenshot", async function (request, response) {
 });
 
 app.get("/pdf", async function (request, response) {
-  console.log('pdf')
   const url = request.query.url;
   const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
 
