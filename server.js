@@ -41,7 +41,7 @@ app.get("/trace", async function (request, response) {
   const filename = `/tmp/trace-${randomUUID()}.json`;
 
   const page = await browser.newPage();
-  await page.tracing.start({path: filename, screeshots: true});
+  await page.tracing.start({path: filename, screenshots: true});
   await page.goto(url);
   await page.tracing.stop();
   await browser.close();
