@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "express": "*",
+    "marked": "^0.3.12",
     "now": "^9.2.7",
     "puppeteer": "*",
     "random-uuid": "*"

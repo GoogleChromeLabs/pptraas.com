@@ -17,97 +17,208 @@
 const express = require('express');
 const puppeteer = require('puppeteer');
 const randomUUID = require('random-uuid');
+const fs = require('fs');
+const util = require('util');
+const marked = require('marked');
 
 const PORT = process.env.port || 8084;
 const app = express();
 
-app.all('*', function enableCors(request, response, next) {
-  response.setHeader('Access-Control-Allow-Origin', '*');
-
-  if('url' in request.query && request.query.url.startsWith('https://puppeteeraas.com')) {
-    return response.status(500).send({ error: 'Error calling self' });
+app.use(function cors(request, response, next) {
+  const url = request.query.url;
+  if (url && url.startsWith('https://puppeteeraas.com')) {
+    return response.status(500).send({error: 'Error calling self'});
   }
 
-  return next();
+  response.header('Access-Control-Allow-Origin', '*');
+
+  next();
+});
+
+app.get('/', async (request, response) => {
+  const readFile = util.promisify(fs.readFile);
+  const md = await readFile('./README.md', {encoding: 'utf-8'});
+  response.send(`
+    <html>
+    <head>
+      <title>Puppeteer as a service</title>
+      <style>
+        body, h2, h3, h4 {
+          font-family: "Product Sans", sans-serif;
+          font-weight: 300;
+        }
+      </style>
+    </head>
+    <body>${marked(md)}</body>
+    </html>
+  `);
+});
+
+// Init code that gets run before all request handlers.
+app.all('*', async (request, response, next)  => {
+  response.locals.browser = await puppeteer.launch({
+    // dumpio: true,
+    // headless: false,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  });
+
+  next(); // pass control on to routes.
 });
 
 app.get('/', function(request, response) {
   response.sendFile(`${__dirname}/views/index.html`);
 });
 
-app.get('/screenshot', async function(request, response) {
+app.get('/screenshot', async (request, response) => {
   const url = request.query.url;
+  if (!url) {
+    return response.status(400).send(
+      'Please provide a URL. Example: ?url=https://example.com');
+  }
 
-  const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
-  const page = await browser.newPage();
-  await page.goto(url);
-  const screenshot = await page.screenshot();
+  // Default to a reasonably large viewport for full page screenshots.
+  const viewport = {
+    width: 1280,
+    height: 1024,
+    deviceScaleFactor: 2
+  };
+
+  let fullPage = true;
+  const size = request.query.size;
+  if (size) {
+    const [width, height] = size.split(',').map(item => Number(item));
+    if (!(isFinite(width) && isFinite(height))) {
+      return response.status(400).send(
+          'Malformed size parameter. Example: ?size=800,600');
+    }
+    viewport.width = width;
+    viewport.height = height;
+
+    fullPage = false;
+  }
+
+  const browser = response.locals.browser;
+
+  try {
+    const page = await browser.newPage();
+    await page.setViewport(viewport);
+    await page.goto(url, {waitUntil: 'networkidle0'});
+
+    const opts = {
+      fullPage,
+      // omitBackground: true
+    };
+
+    if (!fullPage) {
+      opts.clip = {
+        x: 0,
+        y: 0,
+        width: viewport.width,
+        height: viewport.height
+      };
+    }
+
+    const buffer = await page.screenshot(opts);
+    response.type('image/png').send(buffer);
+  } catch (err) {
+    response.status(500).send(err.toString());
+  }
+
   await browser.close();
-
-  response.type('png');
-  response.send(screenshot);
 });
 
-app.get('/metrics', async function(request, response) {
+app.get('/metrics', async (request, response) =>  {
   const url = request.query.url;
+  if (!url) {
+    return response.status(400).send(
+      'Please provide a URL. Example: ?url=https://example.com');
+  }
 
-  const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
+  const browser = response.locals.browser;
   const page = await browser.newPage();
-  await page.goto(url);
+  await page.goto(url, {waitUntil: 'networkidle0'});
   const metrics = await page.metrics();
   await browser.close();
 
-  response.type('application/json');
-  response.send(JSON.stringify(metrics));
+  response.type('application/json').send(JSON.stringify(metrics));
 });
 
-app.get('/pdf', async function(request, response) {
+app.get('/pdf', async (request, response) =>  {
   const url = request.query.url;
-  const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
+  if (!url) {
+    return response.status(400).send(
+      'Please provide a URL. Example: ?url=https://example.com');
+  }
+
+  const browser = response.locals.browser;
 
   const page = await browser.newPage();
-  await page.goto(url);
+  await page.goto(url, {waitUntil: 'networkidle0'});
   const pdf = await page.pdf();
   await browser.close();
 
-  response.type('application/pdf');
-  response.send(pdf);
+  response.type('application/pdf').send(pdf);
 });
 
-app.get('/content', async function(request, response) {
+app.get('/ssr', async (request, response) =>  {
   const url = request.query.url;
-  const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
+  if (!url) {
+    return response.status(400).send(
+      'Please provide a URL. Example: ?url=https://example.com');
+  }
 
-  const page = await browser.newPage();
-  await page.goto(url);
-  const content = await page.content();
+  const browser = response.locals.browser;
+
+  try {
+    const page = await browser.newPage();
+    const res = await page.goto(url, {waitUntil: 'networkidle0'});
+
+    // Inject <base> on page to relative resources load properly.
+    await page.evaluate(url => {
+      const base = document.createElement('base');
+      base.href = url;
+      document.head.prepend(base); // Add to top of head, before all other resources.
+    }, url);
+
+    // Remove scripts and html imports. They've already executed and loaded on the page.
+    await page.evaluate(() => {
+      const elements = document.querySelectorAll('script, link[rel="import"]');
+      elements.forEach(e => e.remove());
+    });
+
+    const html = await page.content();
+    response.status(res.status()).send(html);
+  } catch (e) {
+    response.status(500).send(e.toString());
+  }
+
   await browser.close();
-
-  response.type('text/html');
-  response.send(content);
 });
 
-app.get('/trace', async function(request, response) {
+app.get('/trace', async (request, response) =>  {
   const url = request.query.url;
-  const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
+  if (!url) {
+    return response.status(400).send(
+      'Please provide a URL. Example: ?url=https://example.com');
+  }
+
+  const browser = response.locals.browser;
   const filename = `/tmp/trace-${randomUUID()}.json`;
 
   const page = await browser.newPage();
   await page.tracing.start({path: filename, screenshots: true});
-  await page.goto(url);
+  await page.goto(url, {waitUntil: 'networkidle0'});
   await page.tracing.stop();
   await browser.close();
 
-  response.type('application/json');
-  response.sendFile(filename);
+  response.type('application/json').sendFile(filename);
 });
 
-app.get('/test', async function(request, response) {
-  const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
-
+app.get('/version', async (request, response) =>  {
+  const browser = response.locals.browser;
+  const ua = await browser.userAgent();
   await browser.close();
-
-  response.send('OK');
+  response.send(ua);
 });
 
 app.listen(PORT, function() {
