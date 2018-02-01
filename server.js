@@ -52,6 +52,7 @@ app.get('/', async (request, response) => {
     <body>${marked(md)}</body>
     </html>
   `);
+  // response.sendFile(`${__dirname}/views/index.html`);
 });
 
 // Init code that gets run before all request handlers.
@@ -63,10 +64,6 @@ app.all('*', async (request, response, next) => {
   });
 
   next(); // pass control on to routes.
-});
-
-app.get('/', function(request, response) {
-  response.sendFile(`${__dirname}/views/index.html`);
 });
 
 app.get('/screenshot', async (request, response) => {

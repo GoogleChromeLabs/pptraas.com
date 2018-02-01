@@ -6,6 +6,7 @@ https://puppeteeraas.com/trace?url=https://paul.kinlan.me/
 
 ### Get a png
 https://puppeteeraas.com/screenshot?url=https://paul.kinlan.me/ (full page)
+
 https://puppeteeraas.com/screenshot?url=https://developers.google.com&size=400,400
 
 ### Get a pdf
