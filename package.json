@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "deploy": "now --token $NOW_TOKEN --docker",
-    "alias": "now alias --token=$NOW_TOKEN"
+    "alias": "now alias --token=$NOW_TOKEN",
+    "lint": "eslint ."
   },
   "dependencies": {
     "express": "*",
@@ -20,10 +21,16 @@
   "repository": {
     "url": "https://github.com/PaulKinlan/puppeteeraas.com"
   },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "keywords": [
     "node",
     "glitch",
-    "express"
-  ]
+    "express",
+    "puppeteer",
+    "service"
+  ],
+  "devDependencies": {
+    "eslint": "^4.16.0",
+    "eslint-config-google": "^0.9.1"
+  }
 }
