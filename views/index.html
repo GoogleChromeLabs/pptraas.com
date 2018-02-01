@@ -1,0 +1,50 @@
+<html>
+
+<body>
+  <h1>Welcome to Puppeteer as a service.</h1>
+  <p>
+    Please take our service for a quick spin.
+  </p>
+
+  <h3>Get a trace</h3>
+  <form method="GET" action="/trace?url=https://paul.kinlan.me/" enctype="application/x-www-form-urlencoded">
+    <label for="traceUrl">URL:</label>
+    <input type="text" name="url" id="traceUrl" placeholder="URL to trace">
+    <input type="submit">
+  </form>
+
+
+  <h3>Get a screenshot</h3>
+
+  <form method="GET" action="/screenshot" enctype="application/x-www-form-urlencoded">
+    <label for="screenshotUrl">URL:</label>
+    <input type="text" name="url" id="screenshotUrl"  placeholder="URL to screenshot">
+    <input type="submit">
+  </form>
+
+  <h3>Get a pdf</h3>
+
+  <form method="GET" action="/pdf" enctype="application/x-www-form-urlencoded">
+    <label for="pdfUrl">URL:</label>
+    <input type="text" name="url" id="pdfUrl" placeholder="URL to pdf">
+    <input type="submit">
+  </form>
+
+  <h3>Get metrics</h3>
+
+  <form method="GET" action="/metrics" enctype="application/x-www-form-urlencoded">
+    <label for="metricsUrl">URL:</label>
+    <input type="text" name="url" id="metricsUrl" placeholder="URL to get metrics">
+    <input type="submit">
+  </form>
+
+  <h3>Get HTML</h3>
+
+  <form method="GET" action="/content" enctype="application/x-www-form-urlencoded">
+    <label for="contentUrl">URL:</label>
+    <input type="text" name="url" id="contentUrl" placeholder="URL to get content from">
+    <input type="submit">
+  </form>
+</body>
+
+</html>

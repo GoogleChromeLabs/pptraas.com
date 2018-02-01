@@ -4,14 +4,19 @@ const puppeteer = require('puppeteer');
 
 const randomUUID = require('random-uuid');
 
+
 app.all('*', function enableCors(request, response, next) {
   response.setHeader('Access-Control-Allow-Origin', '*');
 
-  if(request.query.url.startsWith('https://puppeteeraas.com')) {
+  if('url' in request.query && request.query.url.startsWith('https://puppeteeraas.com')) {
     return response.status(500).send({ error: 'Error calling self' });
   }
   
   return next();
+});
+
+app.get("/", function(request, response) {
+    response.sendFile(`${__dirname}/views/index.html`);
 });
 
 app.get("/screenshot", async function (request, response) {
