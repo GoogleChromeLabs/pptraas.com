@@ -55,7 +55,7 @@ app.get('/', async (request, response) => {
 });
 
 // Init code that gets run before all request handlers.
-app.all('*', async (request, response, next)  => {
+app.all('*', async (request, response, next) => {
   response.locals.browser = await puppeteer.launch({
     // dumpio: true,
     // headless: false,
@@ -89,7 +89,7 @@ app.get('/screenshot', async (request, response) => {
     const [width, height] = size.split(',').map(item => Number(item));
     if (!(isFinite(width) && isFinite(height))) {
       return response.status(400).send(
-          'Malformed size parameter. Example: ?size=800,600');
+        'Malformed size parameter. Example: ?size=800,600');
     }
     viewport.width = width;
     viewport.height = height;
@@ -127,7 +127,7 @@ app.get('/screenshot', async (request, response) => {
   await browser.close();
 });
 
-app.get('/metrics', async (request, response) =>  {
+app.get('/metrics', async (request, response) => {
   const url = request.query.url;
   if (!url) {
     return response.status(400).send(
@@ -143,7 +143,7 @@ app.get('/metrics', async (request, response) =>  {
   response.type('application/json').send(JSON.stringify(metrics));
 });
 
-app.get('/pdf', async (request, response) =>  {
+app.get('/pdf', async (request, response) => {
   const url = request.query.url;
   if (!url) {
     return response.status(400).send(
@@ -160,7 +160,7 @@ app.get('/pdf', async (request, response) =>  {
   response.type('application/pdf').send(pdf);
 });
 
-app.get('/ssr', async (request, response) =>  {
+app.get('/ssr', async (request, response) => {
   const url = request.query.url;
   if (!url) {
     return response.status(400).send(
@@ -175,6 +175,7 @@ app.get('/ssr', async (request, response) =>  {
 
     // Inject <base> on page to relative resources load properly.
     await page.evaluate(url => {
+      /* global document */
       const base = document.createElement('base');
       base.href = url;
       document.head.prepend(base); // Add to top of head, before all other resources.
@@ -195,7 +196,7 @@ app.get('/ssr', async (request, response) =>  {
   await browser.close();
 });
 
-app.get('/trace', async (request, response) =>  {
+app.get('/trace', async (request, response) => {
   const url = request.query.url;
   if (!url) {
     return response.status(400).send(
@@ -214,7 +215,7 @@ app.get('/trace', async (request, response) =>  {
   response.type('application/json').sendFile(filename);
 });
 
-app.get('/version', async (request, response) =>  {
+app.get('/version', async (request, response) => {
   const browser = response.locals.browser;
   const ua = await browser.userAgent();
   await browser.close();
