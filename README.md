@@ -2,7 +2,12 @@ Puppeteer as a service
 ======================
 
 ### Get a trace
+
 https://puppeteeraas.com/trace?url=https://paul.kinlan.me/
+
+#### View the trace in trace-viewer
+
+https://chromedevtools.github.io/timeline-viewer/?loadTimelineFromURL=https://puppeteeraas.com/trace?url=https://paul.kinlan.me/
 
 ### Get a png
 https://puppeteeraas.com/screenshot?url=https://paul.kinlan.me/ (full page)
