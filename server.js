@@ -20,18 +20,22 @@ const randomUUID = require('random-uuid');
 const fs = require('fs');
 const util = require('util');
 const marked = require('marked');
+const ua = require('universal-analytics');
 
 const PORT = process.env.port || 8084;
 const app = express();
 
 app.use(function cors(request, response, next) {
   const url = request.query.url;
+  const visitor = ua('UA-114816386-1', {https: true});
+
   if (url && url.startsWith('https://puppeteeraas.com')) {
     return response.status(500).send({error: 'Error calling self'});
   }
 
   response.header('Access-Control-Allow-Origin', '*');
 
+  visitor.pageview(request.originalUrl).send();
   next();
 });
 
