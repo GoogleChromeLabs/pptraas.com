@@ -18,7 +18,7 @@
     "universal-analytics": "^0.4.16"
   },
   "engines": {
-    "node": "8.x"
+    "node": ">= 8.x"
   },
   "repository": {
     "url": "https://github.com/PaulKinlan/puppeteeraas.com"
