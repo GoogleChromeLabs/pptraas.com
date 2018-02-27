@@ -1,5 +1,5 @@
 {
-  "name": "puppets",
+  "name": "puppeteraas",
   "version": "0.0.2",
   "description": "Puppeteer as a service",
   "main": "server.js",
