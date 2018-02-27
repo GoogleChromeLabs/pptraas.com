@@ -23,5 +23,5 @@ https://puppeteeraas.com/metrics?url=https://paul.kinlan.me/
 ### Get "SSR" output of page
 https://puppeteeraas.com/ssr?url=http://todomvc.com/examples/react/#/
 
-### Get version of Puppeteer
+### Get useragent / Chromium version
 https://puppeteeraas.com/version
