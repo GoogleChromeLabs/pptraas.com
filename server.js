@@ -50,6 +50,15 @@ app.get('/', async (request, response) => {
       </style>
     </head>
     <body>${marked(md)}</body>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-114816386-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-114816386-1');
+    </script>
     </html>
   `);
 });
