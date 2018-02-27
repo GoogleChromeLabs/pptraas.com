@@ -46,6 +46,8 @@ app.get('/', async (request, response) => {
     <html>
     <head>
       <title>Puppeteer as a service</title>
+      <meta name="description" content="A hosted service that makes the Chrome Puppeteer API accessible via REST based queries. Tracing, Screenshots and PDF's" />
+      <meta name="google-site-verification" content="4Tf-yH47m_tR7aSXu7t3EI91Gy4apbwnhg60Jzq_ieY" />
       <style>
         body, h2, h3, h4 {
           font-family: "Product Sans", sans-serif;
