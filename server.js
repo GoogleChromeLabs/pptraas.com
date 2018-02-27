@@ -216,12 +216,19 @@ app.get('/trace', async (request, response) => {
   const filename = `/tmp/trace-${randomUUID()}.json`;
 
   const page = await browser.newPage();
-  await page.tracing.start({path: filename, screenshots: true});
-  await page.goto(url, {waitUntil: 'networkidle0'});
-  await page.tracing.stop();
-  await browser.close();
+  try {
+    page.on('error', error => {
+      console.log(url, error);
+    });
+    await page.tracing.start({path: filename, screenshots: true});
+    await page.goto(url, {waitUntil: 'networkidle0'});
+    await page.tracing.stop();
+    response.type('application/json').sendFile(filename);
+  } catch (e) {
+    response.status(500).send(e.toString());
+  }
 
-  response.type('application/json').sendFile(filename);
+  await browser.close();
 });
 
 app.get('/version', async (request, response) => {
