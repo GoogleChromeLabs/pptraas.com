@@ -25,17 +25,19 @@ const ua = require('universal-analytics');
 const PORT = process.env.port || 8084;
 const app = express();
 
-app.use(function cors(request, response, next) {
+// Adds cors, records analytics hit, and prevents self-calling loops.
+app.use((request, response, next) => {
   const url = request.query.url;
-  const visitor = ua('UA-114816386-1', {https: true});
-
   if (url && url.startsWith('https://puppeteeraas.com')) {
     return response.status(500).send({error: 'Error calling self'});
   }
 
   response.header('Access-Control-Allow-Origin', '*');
 
+  // Record GA hit.
+  const visitor = ua('UA-114816386-1', {https: true});
   visitor.pageview(request.originalUrl).send();
+
   next();
 });
 
@@ -49,6 +51,9 @@ app.get('/', async (request, response) => {
       <meta name="description" content="A hosted service that makes the Chrome Puppeteer API accessible via REST based queries. Tracing, Screenshots and PDF's" />
       <meta name="google-site-verification" content="4Tf-yH47m_tR7aSXu7t3EI91Gy4apbwnhg60Jzq_ieY" />
       <style>
+        body {
+          padding: 40px;
+        }
         body, h2, h3, h4 {
           font-family: "Product Sans", sans-serif;
           font-weight: 300;
