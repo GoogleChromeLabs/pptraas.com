@@ -31,3 +31,5 @@ https://puppeteeraas.com/metrics?url=https://paul.kinlan.me/
 
 ### Print UserAgent / Chromium version
 https://puppeteeraas.com/version
+
+[![Lighthouse score: 100/100](https://lighthouse-badge.appspot.com/?score=100&category=Perf)](https://github.com/ebidel/lighthouse-badge)
