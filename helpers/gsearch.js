@@ -21,8 +21,6 @@
 /* global document */
 
 const fs = require('fs');
-const chalk = require('chalk');
-const ansiHTML = require('ansi-html');
 const caniuseDB = require('caniuse-db/data.json').data;
 
 const GOOGLE_SEARCH_CHROME_VERSION = process.env.CHROME_VERSION || 41;
@@ -106,14 +104,13 @@ function uniqueByProperty(items, propName) {
 function printHeader(usage) {
   const str = [];
   /* eslint-disable max-len */
-  str.push(`${ansiHTML(chalk.bold(chalk.yellow('CAREFUL')))}: using ${usage.FeatureFirstUsed.length} HTML/JS, ${usage.CSSFirstUsed.length} CSS features. Some features are ${ansiHTML(chalk.underline('not'))} supported by the Google Search crawler.`);
-  str.push(`The bot runs ${ansiHTML(chalk.red('Chrome ' + GOOGLE_SEARCH_CHROME_VERSION))}, which may not render your page correctly when it's being indexed.`);
-  /* eslint-enable max-len */
-  str.push('<br>');
+  str.push(`<p class="summary"><b class="red">CAREFUL</b>: using ${usage.FeatureFirstUsed.length} HTML/JS and ${usage.CSSFirstUsed.length} CSS features. Some features are <u>not</u> supported by the Google Search crawler.`);
+  str.push(`The bot runs <u>Chrome ${GOOGLE_SEARCH_CHROME_VERSION}</u>, which may not render your page correctly when it's being indexed.`);
   str.push('More info at <a href="https://developers.google.com/search/docs/guides/rendering" target="_blank">developers.google.com/search/docs/guides/rendering</a>.');
-  str.push('<br><br>');
-  str.push('Results:');
+  str.push('</p>');
+  str.push('Features used:');
   str.push('<br>');
+  /* eslint-enable max-len */
   return str;
 }
 
@@ -180,8 +177,6 @@ async function fetchCSSFeatureToNameMapping(browser) {
 async function collectFeatureTraceEvents(browser, url, outfile) {
   const page = await browser.newPage();
 
-  // console.log(ansiHTML(chalk.cyan(`Trace started.`)));
-
   await page.tracing.start({
     path: outfile,
     categories: [
@@ -190,13 +185,9 @@ async function collectFeatureTraceEvents(browser, url, outfile) {
       'disabled-by-default-blink.feature_usage'
     ],
   });
-  // console.log(ansiHTML(chalk.cyan(`Navigating to ${url}`)));
   await page.goto(url, {waitUntil: 'networkidle2'});
-  // console.log(ansiHTML(chalk.cyan(`Waiting for page to be idle...`)));
   await page.waitFor(5000); // add a little more time in case other features are used.
   await page.tracing.stop();
-
-  // console.log(ansiHTML(chalk.cyan(`Trace complete.`)));
 
   const trace = JSON.parse(fs.readFileSync(outfile, {encoding: 'utf-8'}));
 
@@ -253,22 +244,21 @@ async function run(browser, url, outfile) {
   const lines = printHeader(usage);
 
   /* eslint-disable no-unused-vars */
-  const list = ['<ul>'];
+  const list = ['<ol>'];
   for (const [id, feature] of Object.entries([...usage.FeatureFirstUsed, ...usage.CSSFirstUsed])) {
     const caniuseName = BlinkFeatureNameToCaniuseName[feature.name];
     const supported = supportedByGoogleSearch(caniuseName);
     if (caniuseName && !supported) {
       const url = `https://caniuse.com/#feat=${caniuseName}`;
-      const urlFormatted = ansiHTML(chalk.magenta(url));
       if (feature.css) {
         list.push(
-          `<li>CSS \`${feature.name}\`: <a href="${url}" target="_blank">${urlFormatted}</a></li>`);
+          `<li>CSS \`${feature.name}\`: <a href="${url}" target="_blank">${url}</a></li>`);
       } else {
-        list.push(`<li>${feature.name}: <a href="${url}" target="_blank">${urlFormatted}</a></li>`);
+        list.push(`<li>${feature.name}: <a href="${url}" target="_blank">${url}</a></li>`);
       }
     }
   }
-  list.push('</ul>');
+  list.push('</ol>');
   lines.push(...list);
 
   fs.unlinkSync(outfile);

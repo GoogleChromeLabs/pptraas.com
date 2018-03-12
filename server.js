@@ -256,10 +256,7 @@ app.get('/gsearch', async (request, response) => {
   }
 
   const browser = response.locals.browser;
-
-  const outfile = `/tmp/trace-${randomUUID()}.json`;
-  const results = await gsearch.run(browser, url, outfile);
-
+  const results = await gsearch.run(browser, url, `/tmp/trace-${randomUUID()}.json`);
   await browser.close();
 
   const style = `
@@ -269,6 +266,17 @@ app.get('/gsearch', async (request, response) => {
         font-size: 20px;
         font-family: sans-serif;
         font-weight: 300;
+        line-height: 1.4;
+      }
+      .summary a {
+        color: currentcolor;
+        text-decoration: none;
+      }
+      .red {
+        color: #F44336;
+      }
+      a {
+        color: magenta;
       }
     </style>
   `;
