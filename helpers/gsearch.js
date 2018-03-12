@@ -104,7 +104,7 @@ function uniqueByProperty(items, propName) {
 function printHeader(usage) {
   const str = [];
   /* eslint-disable max-len */
-  str.push(`<p class="summary"><b class="red">CAREFUL</b>: using ${usage.FeatureFirstUsed.length} HTML/JS and ${usage.CSSFirstUsed.length} CSS features. Some features are <u>not</u> supported by the Google Search crawler.`);
+  str.push(`<p class="summary"><b class="red">CAREFUL</b>: using ${usage.FeatureFirstUsed.length} HTML/JS and ${usage.CSSFirstUsed.length} CSS features. Some features are <u>not</u> supported by the Google Search crawler. `);
   str.push(`The bot runs <u>Chrome ${GOOGLE_SEARCH_CHROME_VERSION}</u>, which may not render your page correctly when it's being indexed.`);
   str.push('More info at <a href="https://developers.google.com/search/docs/guides/rendering" target="_blank">developers.google.com/search/docs/guides/rendering</a>.');
   str.push('</p>');
