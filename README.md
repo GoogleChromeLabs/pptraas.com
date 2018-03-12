@@ -14,13 +14,20 @@ https://puppeteeraas.com/pdf?url=https://paul.kinlan.me/
 ### Render generated static markup of page ("SSR")
 https://puppeteeraas.com/ssr?url=https://angular2-hn.firebaseapp.com/
 
+### Render as Google Search bot
+
+Detects what features a page is using and cross references them with the features
+supported by the [Google Search bot](https://developers.google.com/search/docs/guides/rendering).
+
+https://puppeteeraas.com/gsearch?url=https://paul.kinlan.me/
+
 ## Performance
 
 ### Get a timeline trace
 
 https://puppeteeraas.com/trace?url=https://paul.kinlan.me/
 
-#### View the trace in trace-viewer
+#### View the trace in trace-viewer:
 
 https://chromedevtools.github.io/timeline-viewer/?loadTimelineFromURL=https://puppeteeraas.com/trace?url=https://paul.kinlan.me/
 

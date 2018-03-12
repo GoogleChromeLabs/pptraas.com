@@ -21,6 +21,7 @@ const fs = require('fs');
 const util = require('util');
 const marked = require('marked');
 const ua = require('universal-analytics');
+const gsearch = require('./helpers/gsearch.js');
 
 const PORT = process.env.port || 8084;
 const app = express();
@@ -44,11 +45,12 @@ app.use((request, response, next) => {
 app.get('/', async (request, response) => {
   const readFile = util.promisify(fs.readFile);
   const md = await readFile('./README.md', {encoding: 'utf-8'});
+  /* eslint-disable */
   response.send(`
     <html>
     <head>
       <title>Puppeteer as a service</title>
-      <meta name="description" content="A hosted service that makes the Chrome Puppeteer API accessible via REST based queries. Tracing, Screenshots and PDF's" />
+      <meta name="description" content="A hosted sstyleervice that makes the Chrome Puppeteer API accessible via REST based queries. Tracing, Screenshots and PDF's" />
       <meta name="google-site-verification" content="4Tf-yH47m_tR7aSXu7t3EI91Gy4apbwnhg60Jzq_ieY" />
       <style>
         body {
@@ -72,6 +74,7 @@ app.get('/', async (request, response) => {
     </script>
     </html>
   `);
+  /* eslint-enable */
 });
 
 // Init code that gets run before all request handlers.
@@ -245,6 +248,47 @@ app.get('/version', async (request, response) => {
   response.send(ua);
 });
 
+app.get('/gsearch', async (request, response) => {
+  const url = request.query.url;
+  if (!url) {
+    return response.status(400).send(
+      'Please provide a URL. Example: ?url=https://example.com');
+  }
+
+  const browser = response.locals.browser;
+
+  const results = await gsearch.run(browser, url);
+
+  await browser.close();
+
+  const style = `
+    <style>
+      body {
+        padding: 1em;
+        font-size: 20px;
+        font-family: sans-serif;
+        font-weight: 300;
+      }
+    </style>
+  `;
+  response.send(style + results);
+});
+
 app.listen(PORT, function() {
   console.log(`App is listening on port ${PORT}`);
+});
+
+// Make sure node server process stops if we get a terminating signal.
+function processTerminator(sig) {
+  if (typeof sig === 'string') {
+    process.exit(1);
+  }
+  console.log('%s: Node server stopped.', Date(Date.now()));
+}
+
+const signals = [
+  'SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT', 'SIGBUS',
+  'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'];
+signals.forEach(sig => {
+  process.once(sig, () => processTerminator(sig));
 });

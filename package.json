@@ -10,6 +10,8 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "ansi-html": "0.0.7",
+    "caniuse-db": "^1.0.30000813",
     "express": "*",
     "marked": "^0.3.12",
     "now": "^9.2.7",
