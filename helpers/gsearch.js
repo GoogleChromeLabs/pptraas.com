@@ -25,8 +25,6 @@ const chalk = require('chalk');
 const ansiHTML = require('ansi-html');
 const caniuseDB = require('caniuse-db/data.json').data;
 
-const url = process.env.URL || 'https://www.chromestatus.com/features';
-const outfile = 'trace.json';
 const GOOGLE_SEARCH_CHROME_VERSION = process.env.CHROME_VERSION || 41;
 
 /* eslint-disable quote-props */
@@ -175,9 +173,11 @@ async function fetchCSSFeatureToNameMapping(browser) {
 /**
  * Start a trace during load to capture web platform features used by the page.
  * @param {!Browser} browser
+ * @param {string} url
+ * @param {string} outfile Trace file name.
  * @return {!Object}
  */
-async function collectFeatureTraceEvents(browser) {
+async function collectFeatureTraceEvents(browser, url, outfile) {
   const page = await browser.newPage();
 
   // console.log(ansiHTML(chalk.cyan(`Trace started.`)));
@@ -223,14 +223,15 @@ async function collectFeatureTraceEvents(browser) {
 /**
  * @param {!Browser} browser
  * @param {string} url
+ * @param {string} outfile
  * @return {string} console output
  */
-async function run(browser, url) {
+async function run(browser, url, outfile) {
   // Parallelize the separate page loads.
   const [featureIdToName, cssFeatureIdToName, traceEvents] = await Promise.all([
     fetchFeatureToNameMapping(browser),
     fetchCSSFeatureToNameMapping(browser),
-    collectFeatureTraceEvents(browser),
+    collectFeatureTraceEvents(browser, url, outfile),
   ]);
 
   const usage = traceEvents.reduce((usage, e) => {
@@ -268,10 +269,7 @@ async function run(browser, url) {
     }
   }
   list.push('</ul>');
-
   lines.push(...list);
-
-  // lines.push('<br>');
 
   fs.unlinkSync(outfile);
 

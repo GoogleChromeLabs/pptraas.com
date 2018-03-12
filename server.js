@@ -257,7 +257,8 @@ app.get('/gsearch', async (request, response) => {
 
   const browser = response.locals.browser;
 
-  const results = await gsearch.run(browser, url);
+  const outfile = `/tmp/trace-${randomUUID()}.json`;
+  const results = await gsearch.run(browser, url, outfile);
 
   await browser.close();
 
