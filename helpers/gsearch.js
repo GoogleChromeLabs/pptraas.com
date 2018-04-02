@@ -79,6 +79,7 @@ const BlinkFeatureNameToCaniuseName = {
   CSSPaintFunction: 'css-paint-api',
   WorkerStart: 'webworkers',
   ServiceWorkerControlledPage: 'serviceworkers',
+  PrepareModuleScript: 'es6-module',
   // CookieGet:
   // CookieSet
 };
@@ -98,6 +99,21 @@ function uniqueByProperty(items, propName) {
 }
 
 /**
+ * Sorts array of features by their name
+ * @param {!Object} a
+ * @param {!Object} b
+ */
+function sortByName(a, b) {
+  if (a.name < b.name) {
+    return -1;
+  }
+  if (a.name > b.name) {
+    return 1;
+  }
+  return 0;
+}
+
+/**
  * @param {!Object} usage Feature usage of page.
  * @return {string}
  */
@@ -108,7 +124,7 @@ function printHeader(usage) {
   str.push(`The bot runs <u>Chrome ${GOOGLE_SEARCH_CHROME_VERSION}</u>, which may not render your page correctly when it's being indexed.`);
   str.push('More info at <a href="https://developers.google.com/search/docs/guides/rendering" target="_blank">developers.google.com/search/docs/guides/rendering</a>.');
   str.push('</p>');
-  str.push('Features used:');
+  str.push('Features not supported by Google Search:');
   str.push('<br>');
   /* eslint-enable max-len */
   return str;
@@ -244,8 +260,10 @@ async function run(browser, url, outfile) {
   const lines = printHeader(usage);
 
   /* eslint-disable no-unused-vars */
-  const list = ['<ol>'];
-  for (const [id, feature] of Object.entries([...usage.FeatureFirstUsed, ...usage.CSSFirstUsed])) {
+  const allFeaturesUsed = Object.entries(
+    [...usage.FeatureFirstUsed, ...usage.CSSFirstUsed].sort(sortByName));
+  let list = ['<ol>'];
+  for (const [id, feature] of allFeaturesUsed) {
     const caniuseName = BlinkFeatureNameToCaniuseName[feature.name];
     const supported = supportedByGoogleSearch(caniuseName);
     if (caniuseName && !supported) {
@@ -256,6 +274,18 @@ async function run(browser, url, outfile) {
       } else {
         list.push(`<li>${feature.name}: <a href="${url}" target="_blank">${url}</a></li>`);
       }
+    }
+  }
+  list.push('</ol>');
+  lines.push(...list);
+
+  list = ['<ol>'];
+  lines.push('<div>All features used:</div>');
+  for (const [id, feature] of allFeaturesUsed) {
+    if (feature.css) {
+      list.push(`<li>CSS \`${feature.name}\`</li>`);
+    } else {
+      list.push(`<li>${feature.name}</li>`);
     }
   }
   list.push('</ol>');
