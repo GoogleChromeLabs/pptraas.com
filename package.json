@@ -10,16 +10,16 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "caniuse-db": "^1.0.30000813",
-    "express": "*",
-    "marked": "^0.3.12",
-    "now": "^9.2.7",
-    "puppeteer": "*",
+    "caniuse-db": "^1.0.30000821",
+    "express": "^4.16.3",
+    "marked": "^0.3.19",
+    "now": "^10.2.2",
+    "puppeteer": "^1.2.0",
     "random-uuid": "*",
     "universal-analytics": "^0.4.16"
   },
   "engines": {
-    "node": ">= 8.x"
+    "node": ">=8"
   },
   "repository": {
     "url": "https://github.com/PaulKinlan/puppeteeraas.com"
@@ -33,7 +33,7 @@
     "service"
   ],
   "devDependencies": {
-    "eslint": "^4.16.0",
+    "eslint": "^4.19.1",
     "eslint-config-google": "^0.9.1"
   }
 }

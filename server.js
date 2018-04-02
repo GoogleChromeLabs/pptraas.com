@@ -23,13 +23,13 @@ const marked = require('marked');
 const ua = require('universal-analytics');
 const gsearch = require('./helpers/gsearch.js');
 
-const PORT = process.env.port || 8084;
+const PORT = process.env.PORT || 8084;
 const app = express();
 
 // Adds cors, records analytics hit, and prevents self-calling loops.
 app.use((request, response, next) => {
   const url = request.query.url;
-  if (url && url.startsWith('https://puppeteeraas.com')) {
+  if (url && (url.startsWith('https://puppeteeraas.com') || url.startsWith('https://puppeteerexamples'))) {
     return response.status(500).send({error: 'Error calling self'});
   }
 
@@ -44,13 +44,14 @@ app.use((request, response, next) => {
 
 app.get('/', async (request, response) => {
   const readFile = util.promisify(fs.readFile);
-  const md = await readFile('./README.md', {encoding: 'utf-8'});
+  const md = (await readFile('./README.md', {encoding: 'utf-8'}))
+      .replace(/puppeteeraas.com/g, request.get('host'));
   /* eslint-disable */
   response.send(`
     <html>
     <head>
       <title>Puppeteer as a service</title>
-      <meta name="description" content="A hosted sstyleervice that makes the Chrome Puppeteer API accessible via REST based queries. Tracing, Screenshots and PDF's" />
+      <meta name="description" content="A hosted service that makes the Chrome Puppeteer API accessible via REST based queries. Tracing, Screenshots and PDF's" />
       <meta name="google-site-verification" content="4Tf-yH47m_tR7aSXu7t3EI91Gy4apbwnhg60Jzq_ieY" />
       <style>
         body {
@@ -80,9 +81,10 @@ app.get('/', async (request, response) => {
 // Init code that gets run before all request handlers.
 app.all('*', async (request, response, next) => {
   response.locals.browser = await puppeteer.launch({
-    // dumpio: true,
+    dumpio: true,
     // headless: false,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    // executablePath: 'google-chrome',
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
   });
 
   next(); // pass control on to routes.
