@@ -16,7 +16,8 @@
     "now": "^10.2.2",
     "puppeteer": "^1.2.0",
     "random-uuid": "*",
-    "universal-analytics": "^0.4.16"
+    "universal-analytics": "^0.4.16",
+    "whatwg-url": "^6.4.0"
   },
   "engines": {
     "node": ">=8"

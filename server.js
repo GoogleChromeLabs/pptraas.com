@@ -21,16 +21,29 @@ const fs = require('fs');
 const util = require('util');
 const marked = require('marked');
 const ua = require('universal-analytics');
+const {URL} = require('whatwg-url');
 const gsearch = require('./helpers/gsearch.js');
 
 const PORT = process.env.PORT || 8084;
 const app = express();
 
+const isAllowedUrl = (string) => {
+  try {
+    const url = new URL(string);
+    return url.hostname !== 'puppeteeraas.com' &&
+      !url.hostname.startsWith('puppeteerexamples');
+  } catch (exception) {
+    return false;
+  }
+};
+
 // Adds cors, records analytics hit, and prevents self-calling loops.
 app.use((request, response, next) => {
   const url = request.query.url;
-  if (url && (url.startsWith('https://puppeteeraas.com') || url.startsWith('https://puppeteerexamples'))) {
-    return response.status(500).send({error: 'Error calling self'});
+  if (url && !isAllowedUrl(url)) {
+    return response.status(500).send({
+      error: 'URL is either invalid or not allowed'
+    });
   }
 
   response.header('Access-Control-Allow-Origin', '*');
@@ -45,13 +58,14 @@ app.use((request, response, next) => {
 app.get('/', async (request, response) => {
   const readFile = util.promisify(fs.readFile);
   const md = (await readFile('./README.md', {encoding: 'utf-8'}))
-      .replace(/puppeteeraas.com/g, request.get('host'));
+      .replace(/puppeteeraas\.com/g, request.get('host'));
   /* eslint-disable */
   response.send(`
+    <!DOCTYPE html>
     <html>
     <head>
       <title>Puppeteer as a service</title>
-      <meta name="description" content="A hosted service that makes the Chrome Puppeteer API accessible via REST based queries. Tracing, Screenshots and PDF's" />
+      <meta name="description" content="A hosted service that makes the Chrome Puppeteer API accessible via REST based queries. Tracing, Screenshots and PDFs" />
       <meta name="google-site-verification" content="4Tf-yH47m_tR7aSXu7t3EI91Gy4apbwnhg60Jzq_ieY" />
       <style>
         body {
