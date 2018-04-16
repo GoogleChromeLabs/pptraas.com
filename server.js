@@ -21,7 +21,7 @@ const fs = require('fs');
 const util = require('util');
 const marked = require('marked');
 const ua = require('universal-analytics');
-const {URL} = require('whatwg-url');
+const {URL} = require('url');
 const gsearch = require('./helpers/gsearch.js');
 
 const PORT = process.env.PORT || 8084;
