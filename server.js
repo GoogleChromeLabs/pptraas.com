@@ -25,6 +25,7 @@ const {URL} = require('url');
 const gsearch = require('./helpers/gsearch.js');
 
 const PORT = process.env.PORT || 8084;
+const GA_ACCOUNT = 'UA-114816386-1';
 const app = express();
 
 const isAllowedUrl = (string) => {
@@ -36,7 +37,6 @@ const isAllowedUrl = (string) => {
     return false;
   }
 };
-
 // Adds cors, records analytics hit, and prevents self-calling loops.
 app.use((request, response, next) => {
   const url = request.query.url;
@@ -46,10 +46,10 @@ app.use((request, response, next) => {
     });
   }
 
-  response.header('Access-Control-Allow-Origin', '*');
+  response.set('Access-Control-Allow-Origin', '*');
 
   // Record GA hit.
-  const visitor = ua('UA-114816386-1', {https: true});
+  const visitor = ua(GA_ACCOUNT, {https: true});
   visitor.pageview(request.originalUrl).send();
 
   next();
@@ -79,13 +79,13 @@ app.get('/', async (request, response) => {
     </head>
     <body>${marked(md)}</body>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-114816386-1"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=${GA_ACCOUNT}"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
-      gtag('config', 'UA-114816386-1');
+      gtag('config', '${GA_ACCOUNT}');
     </script>
     </html>
   `);
@@ -98,7 +98,7 @@ app.all('*', async (request, response, next) => {
     dumpio: true,
     // headless: false,
     // executablePath: 'google-chrome',
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],//, '--disable-dev-shm-usage']
   });
 
   next(); // pass control on to routes.
