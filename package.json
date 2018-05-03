@@ -7,7 +7,6 @@
   "scripts": {
     "start": "node server.js",
     "deploy": "gcloud app deploy . --project puppeteerexamples",
-    "deploy2": "now --token $NOW_TOKEN --docker",
     "alias": "now alias --token=$NOW_TOKEN",
     "lint": "eslint ."
   },
