@@ -1,6 +1,7 @@
 {
   "name": "puppeteraas",
   "version": "0.0.2",
+  "private": true,
   "description": "Puppeteer as a service",
   "main": "server.js",
   "scripts": {

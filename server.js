@@ -31,9 +31,8 @@ const app = express();
 const isAllowedUrl = (string) => {
   try {
     const url = new URL(string);
-    return url.hostname !== 'puppeteeraas.com' &&
-      !url.hostname.startsWith('puppeteerexamples');
-  } catch (exception) {
+    return url.hostname !== 'pptraas.com' && !url.hostname.startsWith('puppeteerexamples');
+  } catch (err) {
     return false;
   }
 };
