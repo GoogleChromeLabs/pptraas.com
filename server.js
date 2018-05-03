@@ -24,7 +24,7 @@ const ua = require('universal-analytics');
 const {URL} = require('url');
 const gsearch = require('./helpers/gsearch.js');
 
-const PORT = process.env.PORT || 8084;
+const PORT = process.env.PORT || 8080;
 const GA_ACCOUNT = 'UA-114816386-1';
 const app = express();
 
