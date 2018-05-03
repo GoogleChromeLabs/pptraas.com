@@ -1,4 +1,4 @@
-<a href="https://github.com/PaulKinlan/puppeteeraas.com"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+<a href="https://github.com/GoogleChromeLabs/puppeteeraas.com"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
 
 Puppeteer as a service
 ======================
@@ -42,4 +42,4 @@ https://pptraas.com/metrics?url=https://paul.kinlan.me/
 https://pptraas.com/version
 
 ----
-[![Deploy to now](https://deploy.now.sh/static/button.svg)](https://deploy.now.sh/?repo=https://github.com/PaulKinlan/puppeteeraas.com) [![Lighthouse score: 100/100](https://lighthouse-badge.appspot.com/?score=100&category=Perf)](https://github.com/ebidel/lighthouse-badge)
+[![Deploy to now](https://deploy.now.sh/static/button.svg)](https://deploy.now.sh/?repo=https://github.com/GoogleChromeLabs/pptraas.com) [![Lighthouse score: 100/100](https://lighthouse-badge.appspot.com/?score=100&category=Perf)](https://github.com/ebidel/lighthouse-badge)
