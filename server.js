@@ -24,16 +24,15 @@ const ua = require('universal-analytics');
 const {URL} = require('url');
 const gsearch = require('./helpers/gsearch.js');
 
-const PORT = process.env.PORT || 8084;
+const PORT = process.env.PORT || 8080;
 const GA_ACCOUNT = 'UA-114816386-1';
 const app = express();
 
 const isAllowedUrl = (string) => {
   try {
     const url = new URL(string);
-    return url.hostname !== 'puppeteeraas.com' &&
-      !url.hostname.startsWith('puppeteerexamples');
-  } catch (exception) {
+    return url.hostname !== 'pptraas.com' && !url.hostname.startsWith('puppeteerexamples');
+  } catch (err) {
     return false;
   }
 };
@@ -57,8 +56,7 @@ app.use((request, response, next) => {
 
 app.get('/', async (request, response) => {
   const readFile = util.promisify(fs.readFile);
-  const md = (await readFile('./README.md', {encoding: 'utf-8'}))
-      .replace(/puppeteeraas\.com/g, request.get('host'));
+  const md = (await readFile('./README.md', {encoding: 'utf-8'}));
   /* eslint-disable */
   response.send(`
     <!DOCTYPE html>
