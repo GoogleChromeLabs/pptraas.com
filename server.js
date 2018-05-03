@@ -57,8 +57,7 @@ app.use((request, response, next) => {
 
 app.get('/', async (request, response) => {
   const readFile = util.promisify(fs.readFile);
-  const md = (await readFile('./README.md', {encoding: 'utf-8'}))
-      .replace(/puppeteeraas\.com/g, request.get('host'));
+  const md = (await readFile('./README.md', {encoding: 'utf-8'}));
   /* eslint-disable */
   response.send(`
     <!DOCTYPE html>
