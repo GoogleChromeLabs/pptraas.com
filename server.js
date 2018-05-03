@@ -96,7 +96,7 @@ app.all('*', async (request, response, next) => {
     dumpio: true,
     // headless: false,
     // executablePath: 'google-chrome',
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],//, '--disable-dev-shm-usage']
+    args: ['--no-sandbox', '--disable-setuid-sandbox'], // , '--disable-dev-shm-usage']
   });
 
   next(); // pass control on to routes.

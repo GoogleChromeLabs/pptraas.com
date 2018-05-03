@@ -102,6 +102,7 @@ function uniqueByProperty(items, propName) {
  * Sorts array of features by their name
  * @param {!Object} a
  * @param {!Object} b
+ * @return {!Array} sorted array
  */
 function sortByName(a, b) {
   if (a.name < b.name) {
