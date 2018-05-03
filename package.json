@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node server.js",
     "deploy": "gcloud app deploy . --project puppeteerexamples",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "echo \"No tests written!\" && exit 0"
   },
   "dependencies": {
     "caniuse-db": "^1.0.30000833",
