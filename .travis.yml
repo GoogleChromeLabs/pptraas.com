@@ -1,7 +1,7 @@
 language: node_js
 node_js:
 - node
-cache: npm
+cache: yarn
 before_install:
 - openssl aes-256-cbc -K $encrypted_fbdbd197bbf4_key -iv $encrypted_fbdbd197bbf4_iv
   -in service-account.json.enc -out service-account.json -d
