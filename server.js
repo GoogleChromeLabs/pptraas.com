@@ -214,9 +214,9 @@ app.get('/ssr', async (request, response) => {
       document.head.prepend(base); // Add to top of head, before all other resources.
     }, url);
 
-    // Remove scripts and html imports. They've already executed and loaded on the page.
+    // Remove scripts(except structured data) and html imports. They've already executed and loaded on the page.
     await page.evaluate(() => {
-      const elements = document.querySelectorAll('script, link[rel="import"]');
+      const elements = document.querySelectorAll('script:not([type="application/ld+json"]), link[rel="import"]');
       elements.forEach(e => e.remove());
     });
 
