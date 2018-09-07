@@ -10,6 +10,8 @@ https://pptraas.com/screenshot?url=https://paul.kinlan.me/ (full page)
 
 https://pptraas.com/screenshot?url=https://developers.google.com&size=400,400
 
+https://pptraas.com/screenshot?url=https://www.wikipedia.org&element=.central-featured
+
 ### Render page as a PDF
 https://pptraas.com/pdf?url=https://paul.kinlan.me/
 
