@@ -22,7 +22,7 @@
     "node": ">=8"
   },
   "repository": {
-    "url": "https://github.com/GoogleChromeLabs/pptraas.com"
+    "url": "https://github.com/jmichaliga/pptraas.com"
   },
   "license": "Apache-2.0",
   "keywords": [
