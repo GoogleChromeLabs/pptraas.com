@@ -298,11 +298,12 @@ app.get('/gsearch', async (request, response) => {
 });
 
 app.get('/scrape', async (request, response) => {
-
   const artist = request.query.artist ? request.query.artist : 'drake';
   const source = request.query.source ? request.query.source : 'e-online';
 
   let WEB_URL = 'https://www.billboard.com/music/'+artist+'/news';
+
+  console.log('scraping:', artist, ' from ', source);
 
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
@@ -327,7 +328,7 @@ app.get('/scrape', async (request, response) => {
 
   await page.goto(WEB_URL);
 
-  await page.evaluate(() => {
+  const result = await page.evaluate(() => {
     const data = [];
 
     // Billboard
@@ -380,17 +381,19 @@ app.get('/scrape', async (request, response) => {
       data
     };
 
-    fs.writeFile('./sources/'+source+'/'+artist+'.json', JSON.stringify(result, null, 4), (err) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      console.log(source+'/'+artist +'. has been created');
-    });
-    return response.status(200).send(result); // Success!
+    // fs.writeFile('./sources/'+source+'/'+artist+'.json', JSON.stringify(result, null, 4), (err) => {
+    //   if (err) {
+    //     console.error(err);
+    //     return;
+    //   }
+    //   console.log(source+'/'+artist +'. has been created');
+    // });
+
+    return result; // Success!
   });
 
   browser.close();
+  response.status(200).send(result);
 });
 
 app.listen(PORT, function() {
