@@ -297,6 +297,13 @@ app.get('/gsearch', async (request, response) => {
   response.send(style + results);
 });
 
+app.get('/serve', async (request, response) => {
+  const artist = request.query.artist ? request.query.artist : 'drake';
+  const source = request.query.source ? request.query.source : 'e-online';
+
+  response.send('serving up: ', artist, ' from ', source);
+});
+
 app.get('/scrape', async (request, response) => {
   const artist = request.query.artist ? request.query.artist : 'drake';
   const source = request.query.source ? request.query.source : 'e-online';
@@ -381,15 +388,15 @@ app.get('/scrape', async (request, response) => {
       data
     };
 
-    // fs.writeFile('./sources/'+source+'/'+artist+'.json', JSON.stringify(result, null, 4), (err) => {
-    //   if (err) {
-    //     console.error(err);
-    //     return;
-    //   }
-    //   console.log(source+'/'+artist +'. has been created');
-    // });
-
     return result; // Success!
+  });
+
+  fs.writeFile('./sources/'+source+'/'+artist+'.json', JSON.stringify(result, null, 4), (err) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    console.log(source+'/'+artist +'. has been created');
   });
 
   browser.close();
