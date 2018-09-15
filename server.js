@@ -1,14 +1,14 @@
 /**
  * Copyright 2017 Google Inc. All rights reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the 'License');
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
+ * distributed under the License is distributed on an 'AS IS' BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
@@ -63,21 +63,21 @@ app.get('/', async (request, response) => {
     <html>
     <head>
       <title>Puppeteer as a service</title>
-      <meta name="description" content="A hosted service that makes the Chrome Puppeteer API accessible via REST based queries. Tracing, Screenshots and PDFs" />
-      <meta name="google-site-verification" content="4Tf-yH47m_tR7aSXu7t3EI91Gy4apbwnhg60Jzq_ieY" />
+      <meta name='description' content='A hosted service that makes the Chrome Puppeteer API accessible via REST based queries. Tracing, Screenshots and PDFs' />
+      <meta name='google-site-verification' content='4Tf-yH47m_tR7aSXu7t3EI91Gy4apbwnhg60Jzq_ieY' />
       <style>
         body {
           padding: 40px;
         }
         body, h2, h3, h4 {
-          font-family: "Product Sans", sans-serif;
+          font-family: 'Product Sans', sans-serif;
           font-weight: 300;
         }
       </style>
     </head>
     <body>${marked(md)}</body>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=${GA_ACCOUNT}"></script>
+    <script async src='https://www.googletagmanager.com/gtag/js?id=${GA_ACCOUNT}'></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -216,7 +216,7 @@ app.get('/ssr', async (request, response) => {
 
     // Remove scripts(except structured data) and html imports. They've already executed and loaded on the page.
     await page.evaluate(() => {
-      const elements = document.querySelectorAll('script:not([type="application/ld+json"]), link[rel="import"]');
+      const elements = document.querySelectorAll('script:not([type='application/ld+json']), link[rel='import']');
       elements.forEach(e => e.remove());
     });
 
@@ -295,6 +295,106 @@ app.get('/gsearch', async (request, response) => {
     </style>
   `;
   response.send(style + results);
+});
+
+app.get('/scrape', async (request, response) => {
+
+  const artist = request.query.artist ? request.query.artist : 'drake';
+  const source = request.query.source ? request.query.source : 'e-online';
+
+  let WEB_URL = 'https://www.billboard.com/music/'+artist+'/news';
+
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+
+  switch (source) {
+    case 'billboard':
+      WEB_URL = 'https://www.billboard.com/music/'+artist+'/news';
+      break;
+    case 'tmz':
+      WEB_URL = 'http://www.tmz.com/person/'+artist;
+      break;
+    case 'people':
+      WEB_URL = 'http://people.com/tag/'+artist;
+      break;
+    case 'e-online':
+      WEB_URL = 'https://www.eonline.com/news/'+artist+'/articles';
+      break;
+    default:
+      WEB_URL = 'https://www.billboard.com/music/'+artist+'/news';
+      break;
+  }
+
+  await page.goto(WEB_URL);
+
+  const result = await page.evaluate(() => {
+    let data = [];
+
+    // Billboard
+    // let articles = document.querySelectorAll('.artist-section__item');
+    // for(let article of articles){
+    //   let title = article.innerText;
+    //   let link = article.childNodes[1].href
+    //   let host = article.childNodes[1].host
+    //   let image = article.childNodes[1].childNodes[1].childNodes[1].childNodes[5].src
+    //   data.push({title, link, host, image});
+    // }
+
+    // E! Online
+    const articles = document.querySelectorAll('.articleList .story');
+    for (const article of articles) {
+      const title = article.childNodes[3].childNodes[1].innerText;
+      const link = article.childNodes[1].href;
+      // let host = article.baseURI
+      const host = 'e-online';
+      const image = article.childNodes[1].childNodes[1].childNodes[0].src;
+      const time = article.childNodes[3].childNodes[5].innerText;
+      data.push({title, link, host, image, time});
+    }
+
+    // People
+    // let articles = document.querySelectorAll('.type-article');
+    // for(let article of articles){
+    //   let title = article.childNodes[7].children[1].innerText
+    //   let link = article.children[0].href
+    //   let host = article.children[0].host
+    //   let image = article.children[0].children[0].dataset.src
+    //   // let time = article.childNodes[3].childNodes[5].innerText
+    //   data.push({title, link, host, image});
+    // }
+
+    // TMZ
+    // let articles = document.querySelectorAll('.personsingle-storyitem');
+    // for(let article of articles){
+    //   let title = article.childNodes[3].children[0].innerText
+    //   let subheading = article.childNodes[3].children[1].innerText
+    //   let link = article.children[0].href
+    //   let host = article.children[0].host
+    //   let image = article.children[0].children[1].src
+    //   let time = article.childNodes[3].children[2].innerText
+    //   data.push({title, subheading, link, host, image, time});
+    // }
+
+    return {
+      scrapedOn: +new Date(),
+      data
+    };
+
+  });
+
+  browser.close();
+
+  (result) => {
+    fs.writeFile('./sources/'+source+'/'+artist+'.json', JSON.stringify(result, null, 4), (err) => {
+      if (err) {
+        console.error(err);
+        return;
+      };
+      console.log(source+'/'+artist +'. has been created');
+    });
+    response.status(200).send(result); // Success!
+  };
+
 });
 
 app.listen(PORT, function() {
