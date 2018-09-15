@@ -215,10 +215,10 @@ app.get('/ssr', async (request, response) => {
     }, url);
 
     // Remove scripts(except structured data) and html imports. They've already executed and loaded on the page.
-    await page.evaluate(() => {
-      const elements = document.querySelectorAll('script:not([type='application/ld+json']), link[rel='import']');
-      elements.forEach(e => e.remove());
-    });
+    // await page.evaluate(() => {
+    //   const elements = document.querySelectorAll('script:not([type='application/ld+json']), link[rel='import']');
+    //   elements.forEach(e => e.remove());
+    // });
 
     const html = await page.content();
     response.status(res.status()).send(html);
@@ -327,8 +327,8 @@ app.get('/scrape', async (request, response) => {
 
   await page.goto(WEB_URL);
 
-  const result = await page.evaluate(() => {
-    let data = [];
+  await page.evaluate(() => {
+    const data = [];
 
     // Billboard
     // let articles = document.querySelectorAll('.artist-section__item');
@@ -375,26 +375,22 @@ app.get('/scrape', async (request, response) => {
     //   data.push({title, subheading, link, host, image, time});
     // }
 
-    return {
+    const result = {
       scrapedOn: +new Date(),
       data
     };
 
-  });
-
-  browser.close();
-
-  (result) => {
     fs.writeFile('./sources/'+source+'/'+artist+'.json', JSON.stringify(result, null, 4), (err) => {
       if (err) {
         console.error(err);
         return;
-      };
+      }
       console.log(source+'/'+artist +'. has been created');
     });
-    response.status(200).send(result); // Success!
-  };
+    return response.status(200).send(result); // Success!
+  });
 
+  browser.close();
 });
 
 app.listen(PORT, function() {
