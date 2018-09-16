@@ -297,11 +297,69 @@ app.get('/gsearch', async (request, response) => {
   response.send(style + results);
 });
 
+app.get('/search', async (request, response) => {
+  console.log(request.query.url);
+  /*
+  TODO: Create a service that checks to see if our URLs are valid and when the last time they were scraped
+  */
+  const data = {
+    lastScraped: '',
+    linkURL: ''
+  };
+  response.send(data);
+});
+
 app.get('/serve', async (request, response) => {
   const artist = request.query.artist ? request.query.artist : 'drake';
-  const source = request.query.source ? request.query.source : 'e-online';
+  const source = request.query.source;
+  let results = [];
 
-  response.send('serving up: ', artist, ' from ', source);
+  function moduleExists( name ) {
+    try {
+      return require.resolve( name );
+    } catch (e) {
+      return false;
+    }
+  }
+
+  if (source && moduleExists('./sources/'+source+'/'+artist+'.json')) {
+    const json = require('./sources/'+source+'/'+artist+'.json');
+    results = json.data;
+  } else {
+    // const sources = ['billboard', 'e-online', 'people', 'tmz'];
+    // const collection = {};
+    // for (const source of sources ) {
+    //   try {
+    //     if (moduleExists('./sources/'+source+'/'+artist+'.json')) {
+    //       const json = require('./sources/'+source+'/'+artist+'.json');
+    //       Object.assign(collection, json.data);
+    //     }
+    //   } catch (e) {
+    //     console.warn(e);
+    //   }
+    // }
+
+    // const results = [];
+
+    // for (const i in collection) {
+    //   if (typeof collection[i] === 'object') {
+    //     results.push(collection[i]);
+    //   }
+    // }
+
+    const collection = {data: []};
+    const billboard = require('./sources/billboard/'+artist+'.json');
+    const eonline = require('./sources/e-online/'+artist+'.json');
+    const people = require('./sources/people/'+artist+'.json');
+    const tmz = require('./sources/tmz/'+artist+'.json');
+  
+    collection.data.concat([people.data, billboard.data, eonline.data, tmz.data]);
+    results = people;
+
+    console.log('-> results:', results, collection);
+  }
+
+  return response.status(200).send({data: results});
 });
 
 app.get('/scrape', async (request, response) => {
@@ -335,63 +393,75 @@ app.get('/scrape', async (request, response) => {
 
   await page.goto(WEB_URL);
 
-  const result = await page.evaluate(() => {
+  const result = await page.evaluate(({artist, source, WEB_URL}) => {
     const data = [];
+    let articles = null;
 
-    // Billboard
-    const articles = document.querySelectorAll('.artist-section__item');
-    for (const article of articles) {
-      const title = article.innerText;
-      const link = article.childNodes[1].href;
-      const host = article.childNodes[1].host;
-      const image = article.childNodes[1].childNodes[1].childNodes[1].childNodes[5].src;
-      data.push({title, link, host, image});
+    switch (source) {
+      case 'billboard':
+        // Billboard
+        articles = document.querySelectorAll('.artist-section__item');
+        for (const article of articles) {
+          const title = article.innerText;
+          const link = article.childNodes[1].href;
+          const host = article.childNodes[1].host;
+          const image = article.childNodes[1].childNodes[1].childNodes[1].childNodes[5].src;
+          data.push({title, link, host, image});
+        }
+        break;
+      case 'e-online':
+        // E! Online
+        articles = document.querySelectorAll('.articleList .story');
+        for (const article of articles) {
+          const title = article.childNodes[3].childNodes[1].innerText;
+          const link = article.childNodes[1].href;
+          // let host = article.baseURI
+          const host = 'e-online';
+          const image = article.childNodes[1].childNodes[1].childNodes[0].src;
+          const time = article.childNodes[3].childNodes[5].innerText;
+          data.push({title, link, host, image, time});
+        }
+        break;
+      case 'people':
+        // People
+        articles = document.querySelectorAll('.type-article');
+        for (const article of articles) {
+          const title = article.childNodes[7].children[1].innerText;
+          const link = article.children[0].href;
+          const host = article.children[0].host;
+          const image = article.children[0].children[0].dataset.src;
+          const time = new Date(); // article.childNodes[3].childNodes[5].innerText;
+          data.push({title, link, host, image, time});
+        }
+        break;
+      case 'tmz':
+        // TMZ
+        articles = document.querySelectorAll('.personsingle-storyitem');
+        for (const article of articles) {
+          const title = article.childNodes[3].children[0].innerText;
+          const subheading = article.childNodes[3].children[1].innerText;
+          const link = article.children[0].href;
+          const host = article.children[0].host;
+          // const image = article.children[0].children[1].src;
+          const time = article.childNodes[3].children[2].innerText;
+          data.push({title, subheading, link, host, time});
+        }
+        break;
+      default:
+        break;
     }
-
-    // E! Online
-    // const articles = document.querySelectorAll('.articleList .story');
-    // for (const article of articles) {
-    //   const title = article.childNodes[3].childNodes[1].innerText;
-    //   const link = article.childNodes[1].href;
-    //   // let host = article.baseURI
-    //   const host = 'e-online';
-    //   const image = article.childNodes[1].childNodes[1].childNodes[0].src;
-    //   const time = article.childNodes[3].childNodes[5].innerText;
-    //   data.push({title, link, host, image, time});
-    // }
-
-    // People
-    // let articles = document.querySelectorAll('.type-article');
-    // for(let article of articles){
-    //   let title = article.childNodes[7].children[1].innerText
-    //   let link = article.children[0].href
-    //   let host = article.children[0].host
-    //   let image = article.children[0].children[0].dataset.src
-    //   // let time = article.childNodes[3].childNodes[5].innerText
-    //   data.push({title, link, host, image});
-    // }
-
-    // TMZ
-    // let articles = document.querySelectorAll('.personsingle-storyitem');
-    // for(let article of articles){
-    //   let title = article.childNodes[3].children[0].innerText
-    //   let subheading = article.childNodes[3].children[1].innerText
-    //   let link = article.children[0].href
-    //   let host = article.children[0].host
-    //   let image = article.children[0].children[1].src
-    //   let time = article.childNodes[3].children[2].innerText
-    //   data.push({title, subheading, link, host, image, time});
-    // }
 
     const result = {
       scrapedOn: +new Date(),
+      source: WEB_URL,
+      artist,
       data
     };
 
     return result; // Success!
-  });
+  }, {artist, source, WEB_URL});
 
-  if (result.data) {
+  if (result.data.length) {
     fs.writeFile('./sources/'+source+'/'+artist+'.json', JSON.stringify(result, null, 4), (err) => {
       if (err) {
         console.error(err);
