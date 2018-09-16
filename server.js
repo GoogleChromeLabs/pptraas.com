@@ -346,17 +346,6 @@ app.get('/serve', async (request, response) => {
         results.push(collection[i]);
       }
     }
-
-    // const collection = {};
-    // const billboard = moduleExists('./sources/billboard/'+artist+'.json') ? require('./sources/billboard/'+artist+'.json') : [];
-    // const eonline = moduleExists('./sources/billboard/'+artist+'.json') ? require('./sources/e-online/'+artist+'.json') : [];
-    // const people = moduleExists('./sources/billboard/'+artist+'.json') ? require('./sources/people/'+artist+'.json') : [];
-    // const tmz = moduleExists('./sources/billboard/'+artist+'.json') ? require('./sources/tmz/'+artist+'.json') : [];
-  
-    // collection = [people, billboard, eonline, tmz];
-    // results = collection;
-
-    console.log('-> results:', results);
   }
 
   return response.status(200).send({data: results});
@@ -468,6 +457,8 @@ app.get('/scrape', async (request, response) => {
         return;
       }
       console.log(source+'/'+artist +'. has been created');
+
+      // TODO: Add Record of this in a DB
     });
   } else {
     console.log('No data to be found');
