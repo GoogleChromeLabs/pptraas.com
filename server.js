@@ -325,38 +325,38 @@ app.get('/serve', async (request, response) => {
   if (source && moduleExists('./sources/'+source+'/'+artist+'.json')) {
     const json = require('./sources/'+source+'/'+artist+'.json');
     results = json.data;
+  } else if (source) {
+    results = [];
   } else {
-    // const sources = ['billboard', 'e-online', 'people', 'tmz'];
+    const sources = ['billboard', 'e-online', 'people', 'tmz'];
+    const collection = {};
+    for (const source of sources ) {
+      try {
+        if (moduleExists('./sources/'+source+'/'+artist+'.json')) {
+          const json = require('./sources/'+source+'/'+artist+'.json');
+          Object.assign(collection, json.data);
+        }
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+
+    for (const i in collection) {
+      if (typeof collection[i] === 'object') {
+        results.push(collection[i]);
+      }
+    }
+
     // const collection = {};
-    // for (const source of sources ) {
-    //   try {
-    //     if (moduleExists('./sources/'+source+'/'+artist+'.json')) {
-    //       const json = require('./sources/'+source+'/'+artist+'.json');
-    //       Object.assign(collection, json.data);
-    //     }
-    //   } catch (e) {
-    //     console.warn(e);
-    //   }
-    // }
-
-    // const results = [];
-
-    // for (const i in collection) {
-    //   if (typeof collection[i] === 'object') {
-    //     results.push(collection[i]);
-    //   }
-    // }
-
-    const collection = {data: []};
-    const billboard = require('./sources/billboard/'+artist+'.json');
-    const eonline = require('./sources/e-online/'+artist+'.json');
-    const people = require('./sources/people/'+artist+'.json');
-    const tmz = require('./sources/tmz/'+artist+'.json');
+    // const billboard = moduleExists('./sources/billboard/'+artist+'.json') ? require('./sources/billboard/'+artist+'.json') : [];
+    // const eonline = moduleExists('./sources/billboard/'+artist+'.json') ? require('./sources/e-online/'+artist+'.json') : [];
+    // const people = moduleExists('./sources/billboard/'+artist+'.json') ? require('./sources/people/'+artist+'.json') : [];
+    // const tmz = moduleExists('./sources/billboard/'+artist+'.json') ? require('./sources/tmz/'+artist+'.json') : [];
   
-    collection.data.concat([people.data, billboard.data, eonline.data, tmz.data]);
-    results = people;
+    // collection = [people, billboard, eonline, tmz];
+    // results = collection;
 
-    console.log('-> results:', results, collection);
+    console.log('-> results:', results);
   }
 
   return response.status(200).send({data: results});
