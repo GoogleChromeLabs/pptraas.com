@@ -339,26 +339,26 @@ app.get('/scrape', async (request, response) => {
     const data = [];
 
     // Billboard
-    // let articles = document.querySelectorAll('.artist-section__item');
-    // for(let article of articles){
-    //   let title = article.innerText;
-    //   let link = article.childNodes[1].href
-    //   let host = article.childNodes[1].host
-    //   let image = article.childNodes[1].childNodes[1].childNodes[1].childNodes[5].src
-    //   data.push({title, link, host, image});
-    // }
+    const articles = document.querySelectorAll('.artist-section__item');
+    for (const article of articles) {
+      const title = article.innerText;
+      const link = article.childNodes[1].href;
+      const host = article.childNodes[1].host;
+      const image = article.childNodes[1].childNodes[1].childNodes[1].childNodes[5].src;
+      data.push({title, link, host, image});
+    }
 
     // E! Online
-    const articles = document.querySelectorAll('.articleList .story');
-    for (const article of articles) {
-      const title = article.childNodes[3].childNodes[1].innerText;
-      const link = article.childNodes[1].href;
-      // let host = article.baseURI
-      const host = 'e-online';
-      const image = article.childNodes[1].childNodes[1].childNodes[0].src;
-      const time = article.childNodes[3].childNodes[5].innerText;
-      data.push({title, link, host, image, time});
-    }
+    // const articles = document.querySelectorAll('.articleList .story');
+    // for (const article of articles) {
+    //   const title = article.childNodes[3].childNodes[1].innerText;
+    //   const link = article.childNodes[1].href;
+    //   // let host = article.baseURI
+    //   const host = 'e-online';
+    //   const image = article.childNodes[1].childNodes[1].childNodes[0].src;
+    //   const time = article.childNodes[3].childNodes[5].innerText;
+    //   data.push({title, link, host, image, time});
+    // }
 
     // People
     // let articles = document.querySelectorAll('.type-article');
@@ -391,13 +391,17 @@ app.get('/scrape', async (request, response) => {
     return result; // Success!
   });
 
-  fs.writeFile('./sources/'+source+'/'+artist+'.json', JSON.stringify(result, null, 4), (err) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
-    console.log(source+'/'+artist +'. has been created');
-  });
+  if (result.data) {
+    fs.writeFile('./sources/'+source+'/'+artist+'.json', JSON.stringify(result, null, 4), (err) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      console.log(source+'/'+artist +'. has been created');
+    });
+  } else {
+    console.log('No data to be found');
+  }
 
   browser.close();
   response.status(200).send(result);
