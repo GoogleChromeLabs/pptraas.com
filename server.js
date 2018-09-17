@@ -457,8 +457,13 @@ app.get('/scrape', async (request, response) => {
         return;
       }
       console.log(source+'/'+artist +'. has been created');
-
       // TODO: Add Record of this in a DB
+      /*
+      db: scraper-db
+      user: perez
+      pw: scr4p3m3
+      loc: us-central1-b
+      */
     });
   } else {
     console.log('No data to be found');
