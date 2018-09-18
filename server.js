@@ -457,13 +457,13 @@ app.get('/scrape', async (request, response) => {
   }, {artist, source, WEB_URL});
 
   if (result.data.length) {
-    fs.writeFileSync('./sources/'+source+'/'+artist+'.json', JSON.stringify(result, null, 4), (err) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      console.log(source+'/'+artist +'. has been created');
-    });
+    // fs.writeFileSync('./sources/'+source+'/'+artist+'.json', JSON.stringify(result, null, 4), (err) => {
+    //   if (err) {
+    //     console.error(err);
+    //     return;
+    //   }
+    //   console.log(source+'/'+artist +'. has been created');
+    // });
 
     // TODO: Add Record of this in a DB
     /*
@@ -473,25 +473,25 @@ app.get('/scrape', async (request, response) => {
       loc: us-central1-b
     */
 
-    let content = {};
-    fs.readFileSync('./sources/index.json', 'utf8', (err, data) => {
-      if (err) throw err;
-      content = JSON.parse(data);
+    // let content = {};
+    // fs.readFileSync('./sources/index.json', 'utf8', (err, data) => {
+    //   if (err) throw err;
+    //   content = JSON.parse(data);
 
-      const addition = {
-        scrapedOn: result.scrapedOn,
-        source: result.source,
-        artist: result.artist
-      };
-      content.data.push(addition);
+    //   const addition = {
+    //     scrapedOn: result.scrapedOn,
+    //     source: result.source,
+    //     artist: result.artist
+    //   };
+    //   content.data.push(addition);
 
-      fs.writeFileSync('./sources/index.json', JSON.stringify(content, null, 4), (err) => {
-        if (err) {
-          console.error(err);
-        }
-        console.log('index updated');
-      });
-    });
+    //   fs.writeFileSync('./sources/index.json', JSON.stringify(content, null, 4), (err) => {
+    //     if (err) {
+    //       console.error(err);
+    //     }
+    //     console.log('index updated');
+    //   });
+    // });
   } else {
     console.log('No data to be found');
   }
