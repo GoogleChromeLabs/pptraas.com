@@ -297,6 +297,12 @@ app.get('/gsearch', async (request, response) => {
   response.send(style + results);
 });
 
+app.get('/test', async (request, response) => {
+  response.send({
+    'source': request.query.source
+  });
+});
+
 app.get('/search', async (request, response) => {
   // TODO: Create this in a DB: See /scrape
   fs.readFile('./sources/index.json', 'utf8', (err, data) => {
@@ -451,7 +457,7 @@ app.get('/scrape', async (request, response) => {
   }, {artist, source, WEB_URL});
 
   if (result.data.length) {
-    fs.writeFile('./sources/'+source+'/'+artist+'.json', JSON.stringify(result, null, 4), (err) => {
+    fs.writeFileSync('./sources/'+source+'/'+artist+'.json', JSON.stringify(result, null, 4), (err) => {
       if (err) {
         console.error(err);
         return;
@@ -468,7 +474,7 @@ app.get('/scrape', async (request, response) => {
     */
 
     let content = {};
-    fs.readFile('./sources/index.json', 'utf8', (err, data) => {
+    fs.readFileSync('./sources/index.json', 'utf8', (err, data) => {
       if (err) throw err;
       content = JSON.parse(data);
 
