@@ -1,14 +1,22 @@
 {
-    "scrapedOn": 1537056644105,
+    "scrapedOn": 1537232181934,
+    "source": "https://www.billboard.com/music/elton-john/news",
+    "artist": "elton-john",
     "data": [
         {
-            "title": "From Phil Collins to Quincy Jones: Music's Elder Statesmen Are Doing Everything But Retiring",
-            "link": "https://www.billboard.com/articles/columns/rock/8474695/phil-collins-quincy-jones-elder-musicians-fall-preview",
+            "title": "The Longest-Leading Billboard Hot 100 No. 1s",
+            "link": "https://www.billboard.com/articles/columns/chart-beat/6077132/longest-leading-hot-100-no-1s",
             "host": "www.billboard.com",
             "image": ""
         },
         {
-            "title": "Young Thug Teases Collaborations With Elton John, 6LACK & Jaden Smith for 'On…",
+            "title": "From Phil Collins to Quincy Jones: Music's Elder Statesmen Are Doing Everything But Retiring",
+            "link": "https://www.billboard.com/articles/columns/rock/8474695/phil-collins-quincy-jones-elder-musicians-fall-preview",
+            "host": "www.billboard.com",
+            "image": "https://www.billboard.com/files/styles/1024x577/public/media/quincy-jones-2014-live-u-billboard-1548.jpg"
+        },
+        {
+            "title": "Young Thug Teases Collaborations With Elton John, 6LACK & Jaden Smith for 'On the Rvn' Project",
             "link": "https://www.billboard.com/articles/columns/hip-hop/8474684/young-thug-on-the-rvn-features",
             "host": "www.billboard.com",
             "image": "https://www.billboard.com/files/styles/1024x577/public/media/young-thug-live-August-2018-billboard-1548.jpg"
@@ -29,13 +37,13 @@
             "title": "Elton John Sings 'Don't Go Breaking My Heart' in Hilarious Snickers Commercial: Watch",
             "link": "https://www.billboard.com/articles/news/8473060/elton-john-dont-go-breaking-my-heart-snickers-commercial",
             "host": "www.billboard.com",
-            "image": "https://www.billboard.com/files/styles/1024x577/public/media/elton-john-grammys-2018-a-billboard-1548.jpg"
+            "image": ""
         },
         {
             "title": "Elton John Partners With Twickets for 'Farewell Yellow Brick Road' Tour",
             "link": "https://www.billboard.com/articles/business/8472948/elton-john-twickets-farewell-yellow-brick-road-tour",
             "host": "www.billboard.com",
-            "image": ""
+            "image": "https://www.billboard.com/files/styles/1024x577/public/media/elton-john-live-p-n-2018-billboard-1548.jpg"
         },
         {
             "title": "Elton John Biopic 'Rocketman' Shifts Summer 2019 Release Date",
@@ -44,23 +52,16 @@
             "image": "https://www.billboard.com/files/styles/1024x577/public/media/elton-john-portrait-1975-u-billboard-1548.jpg"
         },
         {
-            "title": "The Best Quotes About Aretha Franklin From Other Singers: Etta James, Mariah Carey,…",
+            "title": "The Best Quotes About Aretha Franklin From Other Singers: Etta James, Mariah Carey, Elton John &…",
             "link": "https://www.billboard.com/articles/columns/pop/8470536/aretha-franklin-singers-praise-best",
             "host": "www.billboard.com",
             "image": "https://www.billboard.com/files/styles/1024x577/public/media/18-aretha-franklin-LIPG-billboard-1548.jpg"
         },
         {
-            "title": "Hot 100 Turns 60! The Top 60 Male Artists of All-Time, From Elton John to Elvis Presley &…",
+            "title": "Hot 100 Turns 60! The Top 60 Male Artists of All-Time, From Elton John to Elvis Presley & More",
             "link": "https://www.billboard.com/articles/news/hot-100-turns-60/8468084/hot-100-turns-60-top-60-male-artists-all-time-elton-john-stevie-wonder-elvis-presley-michael-jackson",
             "host": "www.billboard.com",
             "image": "https://www.billboard.com/files/styles/1024x577/public/media/Hot-100-60th-Anniversary-Top-60-Male-Artists-2018-billboard-1500.jpg"
-        },
-        {
-            "title": "Elton John Says Interracial Royal Wedding Proves 'The Monarchy Can Evolve With the Times'",
-            "link": "https://www.billboard.com/articles/news/8467066/elton-john-royal-wedding-interview",
-            "host": "www.billboard.com",
-            "image": "https://www.billboard.com/files/styles/1024x577/public/media/elton-john-royal-wedding-may-19-2018-billboard-1548.jpg"
         }
-    ],
-    "source": "https://www.billboard.com/music/elton-john/news"
+    ]
 }

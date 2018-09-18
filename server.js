@@ -298,15 +298,15 @@ app.get('/gsearch', async (request, response) => {
 });
 
 app.get('/search', async (request, response) => {
-  console.log(request.query.url);
-  /*
-  TODO: Create a service that checks to see if our URLs are valid and when the last time they were scraped
-  */
-  const data = {
-    lastScraped: '',
-    linkURL: ''
-  };
-  response.send(data);
+  // TODO: Create this in a DB: See /scrape
+  fs.readFile('./sources/index.json', 'utf8', (err, data) => {
+    if (err) throw err;
+    const content = JSON.parse(data);
+    const result = content.data.filter(f => f.source === request.query.source );
+    response.send({
+      'results': result
+    });
+  });
 });
 
 app.get('/serve', async (request, response) => {
@@ -457,13 +457,34 @@ app.get('/scrape', async (request, response) => {
         return;
       }
       console.log(source+'/'+artist +'. has been created');
-      // TODO: Add Record of this in a DB
-      /*
+    });
+
+    // TODO: Add Record of this in a DB
+    /*
       db: scraper-db
       user: perez
       pw: scr4p3m3
       loc: us-central1-b
-      */
+    */
+
+    let content = {};
+    fs.readFile('./sources/index.json', 'utf8', (err, data) => {
+      if (err) throw err;
+      content = JSON.parse(data);
+
+      const addition = {
+        scrapedOn: result.scrapedOn,
+        source: result.source,
+        artist: result.artist
+      };
+      content.data.push(addition);
+
+      fs.writeFileSync('./sources/index.json', JSON.stringify(content, null, 4), (err) => {
+        if (err) {
+          console.error(err);
+        }
+        console.log('index updated');
+      });
     });
   } else {
     console.log('No data to be found');
