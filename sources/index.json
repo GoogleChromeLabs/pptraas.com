@@ -1,0 +1,24 @@
+{
+    "data": [
+        {
+            "scrapedOn": 1537230261186,
+            "source": "http://www.tmz.com/person/justin-bieber",
+            "artist": "justin-bieber"
+        },
+        {
+            "scrapedOn": 1537230451186,
+            "source": "http://www.tmz.com/person/justin-bieber",
+            "artist": "justin-bieber"
+        },
+        {
+            "scrapedOn": 1537059036731,
+            "source": "http://www.tmz.com/person/drake",
+            "artist": "drake"
+        },
+        {
+            "scrapedOn": 1537232313946,
+            "source": "https://www.billboard.com/music/madonna/news",
+            "artist": "madonna"
+        }
+    ]
+}

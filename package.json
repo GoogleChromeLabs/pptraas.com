@@ -6,7 +6,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "deploy": "gcloud app deploy . --project puppeteerexamples",
+    "deploy": "gcloud app deploy . --project perez-hilton",
     "lint": "eslint .",
     "test": "npm run lint"
   },
@@ -22,7 +22,7 @@
     "node": ">=8"
   },
   "repository": {
-    "url": "https://github.com/GoogleChromeLabs/pptraas.com"
+    "url": "https://github.com/jmichaliga/pptraas.com"
   },
   "license": "Apache-2.0",
   "keywords": [

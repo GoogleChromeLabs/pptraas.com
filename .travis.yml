@@ -8,7 +8,7 @@ before_install:
 deploy:
   provider: gae
   keyfile: service-account.json
-  project: puppeteerexamples
+  project: perez-hilton
 addons:
   ssh_known_hosts:
   - github.com
