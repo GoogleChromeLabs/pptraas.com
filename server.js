@@ -303,6 +303,16 @@ app.get('/test', async (request, response) => {
   });
 });
 
+app.get('/read', async (request, response) => {
+  fs.readFile('./sources/index.json', 'utf8', (err, data) => {
+    if (err) throw err;
+    const content = JSON.parse(data);
+    response.send({
+      'content': content
+    });
+  });
+});
+
 app.get('/search', async (request, response) => {
   // TODO: Create this in a DB: See /scrape
   fs.readFile('./sources/index.json', 'utf8', (err, data) => {
@@ -472,7 +482,7 @@ app.get('/scrape', async (request, response) => {
       pw: scr4p3m3
       loc: us-central1-b
     */
-
+    console.log('Data Returned! Records', result.data.length);
     // let content = {};
     // fs.readFileSync('./sources/index.json', 'utf8', (err, data) => {
     //   if (err) throw err;
