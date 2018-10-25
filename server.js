@@ -216,7 +216,8 @@ app.get('/ssr', async (request, response) => {
 
     // Remove scripts(except structured data) and html imports. They've already executed and loaded on the page.
     await page.evaluate(() => {
-      const elements = document.querySelectorAll('script:not([type="application/ld+json"]), link[rel="import"]');
+      const elements = document.querySelectorAll(
+        'script:not([type="application/ld+json"]), link[rel="import"]');
       elements.forEach(e => e.remove());
     });
 
