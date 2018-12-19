@@ -116,6 +116,15 @@ app.get('/screenshot', async (request, response) => {
     deviceScaleFactor: 2
   };
 
+  const scale = request.query.scale;
+  if(scale) {
+    if(!isFinite(scale)){
+      return response.status(400).send(
+        'Malformed scale parameter. Example ?scale=1.0');
+    }
+    viewport.deviceScaleFactor = Number(request.query.scale);
+  }
+
   let fullPage = true;
   const size = request.query.size;
   if (size) {
