@@ -16,13 +16,16 @@
 
 const express = require('express');
 const puppeteer = require('puppeteer');
+const svgexport = require('svgexport');
 const randomUUID = require('random-uuid');
 const fs = require('fs');
+const http = require('http');
 const util = require('util');
 const marked = require('marked');
 const ua = require('universal-analytics');
 const {URL} = require('url');
 const gsearch = require('./helpers/gsearch.js');
+const shortid = require('shortid');
 
 const PORT = process.env.PORT || 8080;
 const GA_ACCOUNT = 'UA-114816386-1';
@@ -36,6 +39,7 @@ const isAllowedUrl = (string) => {
     return false;
   }
 };
+
 // Adds cors, records analytics hit, and prevents self-calling loops.
 app.use((request, response, next) => {
   const url = request.query.url;
@@ -48,8 +52,8 @@ app.use((request, response, next) => {
   response.set('Access-Control-Allow-Origin', '*');
 
   // Record GA hit.
-  const visitor = ua(GA_ACCOUNT, {https: true});
-  visitor.pageview(request.originalUrl).send();
+  //const visitor = ua(GA_ACCOUNT, {https: true});
+  //visitor.pageview(request.originalUrl).send();
 
   next();
 });
@@ -144,7 +148,7 @@ app.get('/screenshot', async (request, response) => {
   try {
     const page = await browser.newPage();
     await page.setViewport(viewport);
-    await page.goto(url, {waitUntil: 'networkidle0'});
+    await page.goto(url, {waitUntil: 'load'});
 
     const opts = {
       fullPage,
@@ -171,7 +175,11 @@ app.get('/screenshot', async (request, response) => {
       }
       buffer = await elementHandle.screenshot();
     } else {
-      buffer = await page.screenshot(opts);
+      const filename = '/home/pptruser/' + shortid.generate() + '.png';
+      opts.path = filename;
+      await page.screenshot(opts);
+      const readFile = util.promisify(fs.readFile);
+      buffer = (await readFile(filename));
     }
     response.type('image/png').send(buffer);
   } catch (err) {
@@ -180,6 +188,48 @@ app.get('/screenshot', async (request, response) => {
 
   await browser.close();
 });
+
+app.get('/svgexport', async (request, response) => {
+  const url = request.query.url;
+  if (!url) {
+    return response.status(400).send(
+      'Please provide a URL. Example: ?url=https://example.com');
+  }
+
+  const browser = response.locals.browser;
+  
+  try {
+
+    let buffer;
+    const id = shortid.generate();
+    const svgFilename = '/tmp/' + id + '.svg';
+    const pngFilename = '/tmp/' + id + '.png';
+    
+    let writeStream = fs.createWriteStream(svgFilename);
+    const get = util.promisify(http.get);
+    let response = await get(request.query.url);
+    response.pipe(writeStream);
+    writeStream.close();
+   
+    const datafile = [
+	    {"input": [svgFilename,"0.4x"]},
+	    {"output": [pngFilename]}
+    ];
+    
+    const render = util.promisify(svgexport.render);
+    await render(datafile);
+	
+    const readFile = util.promisify(fs.readFile);
+    buffer = (await readFile(pngFilename));
+    response.type('image/png').send(buffer);
+  } catch (err) {
+    response.status(500).send(err.toString());
+  }
+
+  await browser.close();
+});
+
+
 
 app.get('/metrics', async (request, response) => {
   const url = request.query.url;

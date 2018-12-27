@@ -16,6 +16,8 @@
     "marked": "^0.5.1",
     "puppeteer": "^1.9.0",
     "random-uuid": "*",
+    "shortid": "^2.2.14",
+    "svgexport": "^0.3.2",
     "universal-analytics": "^0.4.20"
   },
   "engines": {
