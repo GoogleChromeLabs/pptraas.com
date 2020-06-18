@@ -60,3 +60,4 @@ typings/
 service-account.json
 
 *.code-workspace
+.history
