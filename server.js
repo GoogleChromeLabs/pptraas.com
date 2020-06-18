@@ -20,36 +20,42 @@ const randomUUID = require('random-uuid');
 const fs = require('fs');
 const util = require('util');
 const marked = require('marked');
-const ua = require('universal-analytics');
 const {URL} = require('url');
-const gsearch = require('./helpers/gsearch.js');
+const cookieParser = require('cookie-parser')
 
 const PORT = process.env.PORT || 8080;
-const GA_ACCOUNT = 'UA-114816386-1';
 const app = express();
+app.use(cookieParser());
 
-const isAllowedUrl = (string) => {
-  try {
-    const url = new URL(string);
-    return url.hostname !== 'pptraas.com' && !url.hostname.startsWith('puppeteerexamples');
-  } catch (err) {
-    return false;
-  }
+// prepare cookies object to be passed to the browser
+const baseCookie = {
+  secure: true, 
+  domain: '.howtank.ninja',
+  sameSite: 'Lax',
 };
-// Adds cors, records analytics hit, and prevents self-calling loops.
+
+const extractCookies = (req) => (
+  Object.keys(req.cookies)
+    .map(name => {
+      const value = req.cookies[name];
+      return {
+        ...baseCookie, 
+        name, 
+        value,
+        ...name === 'JSESSIONID' && {
+                sameSite: 'Lax',
+                httpOnly: true,
+        },
+      }
+    })
+    .filter(c => c.name && c.value)
+);
+
+// Adds cors
 app.use((request, response, next) => {
   const url = request.query.url;
-  if (url && !isAllowedUrl(url)) {
-    return response.status(500).send({
-      error: 'URL is either invalid or not allowed'
-    });
-  }
 
   response.set('Access-Control-Allow-Origin', '*');
-
-  // Record GA hit.
-  const visitor = ua(GA_ACCOUNT, {https: true});
-  visitor.pageview(request.originalUrl).send();
 
   next();
 });
@@ -64,7 +70,6 @@ app.get('/', async (request, response) => {
     <head>
       <title>Puppeteer as a service</title>
       <meta name="description" content="A hosted service that makes the Chrome Puppeteer API accessible via REST based queries. Tracing, Screenshots and PDFs" />
-      <meta name="google-site-verification" content="4Tf-yH47m_tR7aSXu7t3EI91Gy4apbwnhg60Jzq_ieY" />
       <style>
         body {
           padding: 40px;
@@ -76,15 +81,6 @@ app.get('/', async (request, response) => {
       </style>
     </head>
     <body>${marked(md)}</body>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=${GA_ACCOUNT}"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', '${GA_ACCOUNT}');
-    </script>
     </html>
   `);
   /* eslint-enable */
@@ -194,12 +190,15 @@ app.get('/pdf', async (request, response) => {
     return response.status(400).send(
       'Please provide a URL. Example: ?url=https://example.com');
   }
-
+  
   const browser = response.locals.browser;
+  const cookies = extractCookies(request);
 
   const page = await browser.newPage();
+  await page.emulateMedia('print');
+  await page.setCookie(...cookies);
   await page.goto(url, {waitUntil: 'networkidle0'});
-  const pdf = await page.pdf();
+  const pdf = await page.pdf({format: (request.query.format || 'A4')});
   await browser.close();
 
   response.type('application/pdf').send(pdf);
@@ -273,41 +272,6 @@ app.get('/version', async (request, response) => {
   const ua = await browser.userAgent();
   await browser.close();
   response.send(ua);
-});
-
-app.get('/gsearch', async (request, response) => {
-  const url = request.query.url;
-  if (!url) {
-    return response.status(400).send(
-      'Please provide a URL. Example: ?url=https://example.com');
-  }
-
-  const browser = response.locals.browser;
-  const results = await gsearch.run(browser, url, `/tmp/trace-${randomUUID()}.json`);
-  await browser.close();
-
-  const style = `
-    <style>
-      body {
-        padding: 1em;
-        font-size: 20px;
-        font-family: sans-serif;
-        font-weight: 300;
-        line-height: 1.4;
-      }
-      .summary a {
-        color: currentcolor;
-        text-decoration: none;
-      }
-      .red {
-        color: #F44336;
-      }
-      a {
-        color: magenta;
-      }
-    </style>
-  `;
-  response.send(style + results);
 });
 
 app.listen(PORT, function() {

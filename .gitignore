@@ -58,3 +58,5 @@ typings/
 .env
 
 service-account.json
+
+*.code-workspace

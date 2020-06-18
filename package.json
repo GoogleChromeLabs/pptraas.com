@@ -1,28 +1,26 @@
 {
-  "name": "pptraas",
-  "version": "0.0.2",
+  "name": "htmltopdf",
+  "version": "0.0.2-hwt",
   "private": true,
   "description": "Puppeteer as a service",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "deploy": "gcloud app deploy . --project puppeteerexamples",
     "lint": "eslint .",
     "test": "npm run lint"
   },
   "dependencies": {
-    "caniuse-db": "^1.0.30000899",
-    "express": "^4.16.4",
-    "marked": "^0.5.1",
-    "puppeteer": "^1.9.0",
-    "random-uuid": "*",
-    "universal-analytics": "^0.4.20"
+    "cookie-parser": "^1.4.5",
+    "express": "^4.17.1",
+    "marked": "^1.1.0",
+    "puppeteer": "^4.0.0",
+    "random-uuid": "*"
   },
   "engines": {
-    "node": ">=8"
+    "node": ">=10"
   },
   "repository": {
-    "url": "https://github.com/GoogleChromeLabs/pptraas.com"
+    "url": "https://github.com/howtank/htmltopdf"
   },
   "license": "Apache-2.0",
   "keywords": [
@@ -33,7 +31,7 @@
     "service"
   ],
   "devDependencies": {
-    "eslint": "^5.7.0",
-    "eslint-config-google": "^0.11.0"
+    "eslint": "^7.2.0",
+    "eslint-config-google": "^0.14.0"
   }
 }
