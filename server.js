@@ -23,14 +23,13 @@ const marked = require('marked');
 const {URL} = require('url');
 const cookieParser = require('cookie-parser')
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 4040;
 const app = express();
 app.use(cookieParser());
 
 // prepare cookies object to be passed to the browser
 const baseCookie = {
   secure: true, 
-  domain: '.howtank.ninja',
   sameSite: 'Lax',
 };
 
@@ -42,21 +41,20 @@ const extractCookies = (req) => (
         ...baseCookie, 
         name, 
         value,
+        domain: req.query.domain,
         ...name === 'JSESSIONID' && {
                 sameSite: 'Lax',
                 httpOnly: true,
         },
       }
     })
-    .filter(c => c.name && c.value)
+    // .filter(c => c.name && c.value)
 );
 
 // Adds cors
 app.use((request, response, next) => {
   const url = request.query.url;
-
   response.set('Access-Control-Allow-Origin', '*');
-
   next();
 });
 
@@ -129,8 +127,11 @@ app.get('/screenshot', async (request, response) => {
   const browser = response.locals.browser;
 
   try {
+    const cookies = extractCookies(request);
     const page = await browser.newPage();
     await page.setViewport(viewport);
+    await page.emulateMedia('print');
+    await page.setCookie(...cookies);
     await page.goto(url, {waitUntil: 'networkidle0'});
 
     const opts = {
@@ -168,6 +169,31 @@ app.get('/screenshot', async (request, response) => {
   await browser.close();
 });
 
+app.get('/pdf', async (request, response) => {
+  const url = request.query.url;
+  if (!url) {
+    return response.status(400).send(
+      'Please provide a URL. Example: ?url=https://example.com');
+  }
+  
+  const browser = response.locals.browser;
+
+  try {
+    const cookies = extractCookies(request);
+
+    const page = await browser.newPage();
+    await page.emulateMedia('print');
+    await page.setCookie(...cookies);
+    await page.goto(url, {waitUntil: 'networkidle0'});
+    const pdf = await page.pdf({format: (request.query.format || 'A4')});
+    await browser.close();
+
+    response.type('application/pdf').send(pdf);
+  } catch (err) {
+    response.status(500).send(err.toString());
+  }
+});
+
 app.get('/metrics', async (request, response) => {
   const url = request.query.url;
   if (!url) {
@@ -182,26 +208,6 @@ app.get('/metrics', async (request, response) => {
   await browser.close();
 
   response.type('application/json').send(JSON.stringify(metrics));
-});
-
-app.get('/pdf', async (request, response) => {
-  const url = request.query.url;
-  if (!url) {
-    return response.status(400).send(
-      'Please provide a URL. Example: ?url=https://example.com');
-  }
-  
-  const browser = response.locals.browser;
-  const cookies = extractCookies(request);
-
-  const page = await browser.newPage();
-  await page.emulateMedia('print');
-  await page.setCookie(...cookies);
-  await page.goto(url, {waitUntil: 'networkidle0'});
-  const pdf = await page.pdf({format: (request.query.format || 'A4')});
-  await browser.close();
-
-  response.type('application/pdf').send(pdf);
 });
 
 app.get('/ssr', async (request, response) => {
