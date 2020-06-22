@@ -182,7 +182,6 @@ app.get('/pdf', async (request, response) => {
     const cookies = extractCookies(request);
 
     const page = await browser.newPage();
-    await page.emulateMedia('print');
     await page.setCookie(...cookies);
     await page.goto(url, {waitUntil: 'networkidle0'});
     const pdf = await page.pdf({format: (request.query.format || 'A4')});
