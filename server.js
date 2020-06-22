@@ -130,7 +130,6 @@ app.get('/screenshot', async (request, response) => {
     const cookies = extractCookies(request);
     const page = await browser.newPage();
     await page.setViewport(viewport);
-    await page.emulateMedia('print');
     await page.setCookie(...cookies);
     await page.goto(url, {waitUntil: 'networkidle0'});
 
@@ -175,6 +174,9 @@ app.get('/pdf', async (request, response) => {
     return response.status(400).send(
       'Please provide a URL. Example: ?url=https://example.com');
   }
+
+  const media = request.query.media;
+  const orientation = request.query.orientation;
   
   const browser = response.locals.browser;
 
@@ -182,10 +184,14 @@ app.get('/pdf', async (request, response) => {
     const cookies = extractCookies(request);
 
     const page = await browser.newPage();
-    await page.emulateMedia('print');
+    if (media) await page.emulateMedia(media);
+    
     await page.setCookie(...cookies);
     await page.goto(url, {waitUntil: 'networkidle0'});
-    const pdf = await page.pdf({format: (request.query.format || 'A4')});
+    const pdf = await page.pdf({
+      format: (request.query.format || 'A4'), 
+      landscape: (orientation && orientation === 'landscape'), 
+    });
     await browser.close();
 
     response.type('application/pdf').send(pdf);
