@@ -184,7 +184,9 @@ app.get('/pdf', async (request, response) => {
     const cookies = extractCookies(request);
 
     const page = await browser.newPage();
-    if (media) await page.emulateMedia(media);
+    // TODO Alecs: media don't seem to be taken in account
+    // note: indicators currently works best without any setting
+    // await page.emulateMediaType((media === 'screen' || media === 'print' && media) || null);
     
     await page.setCookie(...cookies);
     await page.goto(url, {waitUntil: 'networkidle0'});
