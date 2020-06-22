@@ -142,7 +142,7 @@ pipeline {
         always {
             howtankNotification (
                 streamId: 'ccb5e47a4f0311ea909c0a815897bad6ae46634d',
-                message: 'Hey @all! ${JOB_NAME} build status from $BRANCH branch to htmltopdf is ${BUILD_STATUS}',
+                message: 'Hey @all! ${JOB_NAME} build status from $BRANCH branch to htmltopdf on ${ENVIRONMENT} is ${BUILD_STATUS}',
                 accessToken: 'id:howtank_jenkins_jwt',
                 notifyAborted: 'false',
                 notifyFailure: 'true',
