@@ -15,7 +15,7 @@ pipeline {
             name: 'GIT_CREDENTIALS_ID',
             description: 'Select the ID of the GIT credentials configured in Jenkins',
             //defaultValue: env.DEFAULT_GIT_CREDENTIALS,
-            defaultValue: gihub-devops,
+            defaultValue: 'gihub-devops',
             credentialType: "SSH Username with private key",
             required: true
         )
