@@ -42,7 +42,7 @@ pipeline {
             steps {
                 parallel(
                     java: {
-                        sh label: "Compile Java code", script: "rsync -av --delete $WORSPACE/ /data/docker/htmltopdf/app/"
+                        sh label: "Compile Java code", script: "rsync -av --delete $WORKSPACE/ /data/docker/htmltopdf/app/"
                     }
                 )
             }
@@ -151,5 +151,5 @@ pipeline {
             
     //     }
     // }
-    
+
 }
