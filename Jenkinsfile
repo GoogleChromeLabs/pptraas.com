@@ -14,7 +14,8 @@ pipeline {
         credentials(
             name: 'GIT_CREDENTIALS_ID',
             description: 'Select the ID of the GIT credentials configured in Jenkins',
-            defaultValue: env.DEFAULT_GIT_CREDENTIALS,
+            //defaultValue: env.DEFAULT_GIT_CREDENTIALS,
+            defaultValue: 'gihub-devops',
             credentialType: "SSH Username with private key",
             required: true
         )
@@ -33,7 +34,8 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git branch: "${params.BRANCH}", credentialsId: "${params.GIT_CREDENTIALS_ID}", url: "${env.GIT_URL}"
+                //git branch: "${params.BRANCH}", credentialsId: "${params.GIT_CREDENTIALS_ID}", url: "${env.GIT_URL}"
+                git branch: "${params.BRANCH}", credentialsId: "gihub-devops", url: "${env.GIT_URL}"
             }
 
         }
@@ -42,7 +44,7 @@ pipeline {
             steps {
                 parallel(
                     java: {
-                        sh label: "Compile Java code", script: "rsync -av --delete $WORKSPACE/ /data/docker/htmltopdf/app/"
+                        sh label: "Compile Java code", script: "rsync -av --delete $WORKSPACE/ /docker-data/docker/htmltopdf/app/"
                     }
                 )
             }
@@ -58,6 +60,7 @@ pipeline {
                             }
 
                         stage ('Starting container') {
+                            sh 'cd ${DOCKER_CONFIG} && sudo /usr/local/bin/docker-compose build htmltopdf'
                             sh 'cd ${DOCKER_CONFIG} && sudo /usr/local/bin/docker-compose up -d htmltopdf'
                         }
                     }
@@ -135,21 +138,21 @@ pipeline {
     }
 
 
-    // post {
-    //     always {
-    //         howtankNotification (
-    //             streamId: 'ccb5e47a4f0311ea909c0a815897bad6ae46634d',
-    //             message: 'Hey @all! ${JOB_NAME} build status from $BRANCH branch to htmltopdf is ${BUILD_STATUS}',
-    //             accessToken: 'id:howtank_jenkins_jwt',
-    //             notifyAborted: 'false',
-    //             notifyFailure: 'true',
-    //             notifyNotBuilt: 'false',
-    //             notifySuccess: 'true',
-    //             notifyUnstable: 'false',
-    //             notifyBackToNormal: 'true'
-    //         )
+    post {
+        always {
+            howtankNotification (
+                streamId: 'ccb5e47a4f0311ea909c0a815897bad6ae46634d',
+                message: 'Hey @all! ${JOB_NAME} build status from $BRANCH branch to htmltopdf on ${ENVIRONMENT} is ${BUILD_STATUS}',
+                accessToken: 'id:howtank_jenkins_jwt',
+                notifyAborted: 'false',
+                notifyFailure: 'true',
+                notifyNotBuilt: 'false',
+                notifySuccess: 'true',
+                notifyUnstable: 'false',
+                notifyBackToNormal: 'true'
+            )
             
-    //     }
-    // }
+        }
+    }
 
 }
