@@ -42,7 +42,7 @@ pipeline {
             steps {
                 parallel(
                     java: {
-                        sh label: "Compile Java code", script: "rsync -av --delete $WORKSPACE/ /data/docker/htmltopdf/app/"
+                        sh label: "Compile Java code", script: "rsync -av --delete $WORKSPACE/ /docker-data/docker/htmltopdf/app/"
                     }
                 )
             }
@@ -58,6 +58,7 @@ pipeline {
                             }
 
                         stage ('Starting container') {
+                            sh 'cd ${DOCKER_CONFIG} && sudo /usr/local/bin/docker-compose build htmltopdf'
                             sh 'cd ${DOCKER_CONFIG} && sudo /usr/local/bin/docker-compose up -d htmltopdf'
                         }
                     }
