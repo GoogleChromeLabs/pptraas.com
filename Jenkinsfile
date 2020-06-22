@@ -34,7 +34,8 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git branch: "${params.BRANCH}", credentialsId: "${params.GIT_CREDENTIALS_ID}", url: "${env.GIT_URL}"
+                //git branch: "${params.BRANCH}", credentialsId: "${params.GIT_CREDENTIALS_ID}", url: "${env.GIT_URL}"
+                git branch: "${params.BRANCH}", credentialsId: "gihub-devops", url: "${env.GIT_URL}"
             }
 
         }
