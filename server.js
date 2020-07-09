@@ -181,6 +181,7 @@ app.get('/pdf', async (request, response) => {
   const browser = response.locals.browser;
 
   try {
+    console.log(req.cookies);
     const cookies = extractCookies(request);
 
     const page = await browser.newPage();
@@ -188,7 +189,6 @@ app.get('/pdf', async (request, response) => {
     // note: indicators currently works best without any setting
     // await page.emulateMediaType((media === 'screen' || media === 'print' && media) || null);
     
-    console.log(cookies);
 
     await page.setCookie(...cookies);
     await page.goto(url, {waitUntil: 'networkidle0'});
