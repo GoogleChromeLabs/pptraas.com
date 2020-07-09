@@ -11,14 +11,6 @@ pipeline {
             choices: ['staging', 'prod'],
             description: 'Select ENV'
         )
-        credentials(
-            name: 'GIT_CREDENTIALS_ID',
-            description: 'Select the ID of the GIT credentials configured in Jenkins',
-            //defaultValue: env.DEFAULT_GIT_CREDENTIALS,
-            defaultValue: 'gihub-devops',
-            credentialType: "SSH Username with private key",
-            required: true
-        )
         gitParameter(
             name: 'BRANCH',
             branchFilter: 'origin/(.*)',
@@ -34,8 +26,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                //git branch: "${params.BRANCH}", credentialsId: "${params.GIT_CREDENTIALS_ID}", url: "${env.GIT_URL}"
-                git branch: "${params.BRANCH}", credentialsId: "gihub-devops", url: "${env.GIT_URL}"
+                git branch: "${params.BRANCH}", credentialsId: ${env.GIT_CREDENTIALS_ID}, url: "${env.GIT_URL}"
             }
 
         }
