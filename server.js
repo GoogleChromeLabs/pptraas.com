@@ -188,6 +188,8 @@ app.get('/pdf', async (request, response) => {
     // note: indicators currently works best without any setting
     // await page.emulateMediaType((media === 'screen' || media === 'print' && media) || null);
     
+    console.log(cookies);
+
     await page.setCookie(...cookies);
     await page.goto(url, {waitUntil: 'networkidle0'});
     const pdf = await page.pdf({
