@@ -16,19 +16,15 @@
 
 const express = require('express');
 const puppeteer = require('puppeteer');
-const svgexport = require('svgexport');
 const randomUUID = require('random-uuid');
 const fs = require('fs');
 const http = require('http');
 const util = require('util');
 const marked = require('marked');
-const ua = require('universal-analytics');
 const {URL} = require('url');
-const gsearch = require('./helpers/gsearch.js');
 const shortid = require('shortid');
 
 const PORT = process.env.PORT || 8080;
-const GA_ACCOUNT = 'UA-114816386-1';
 const app = express();
 
 const isAllowedUrl = (string) => {
@@ -51,9 +47,6 @@ app.use((request, response, next) => {
 
   response.set('Access-Control-Allow-Origin', '*');
 
-  // Record GA hit.
-  //const visitor = ua(GA_ACCOUNT, {https: true});
-  //visitor.pageview(request.originalUrl).send();
 
   next();
 });
@@ -80,15 +73,6 @@ app.get('/', async (request, response) => {
       </style>
     </head>
     <body>${marked(md)}</body>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=${GA_ACCOUNT}"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', '${GA_ACCOUNT}');
-    </script>
     </html>
   `);
   /* eslint-enable */
@@ -99,7 +83,7 @@ app.all('*', async (request, response, next) => {
   response.locals.browser = await puppeteer.launch({
     dumpio: true,
     // headless: false,
-    // executablePath: 'google-chrome',
+    executablePath: 'google-chrome-unstable',
     args: ['--no-sandbox', '--disable-setuid-sandbox'], // , '--disable-dev-shm-usage']
   });
 
@@ -256,9 +240,19 @@ app.get('/pdf', async (request, response) => {
 
   const browser = response.locals.browser;
 
+  const options = {};
+  const format = request.query.format;
+  if(format) {
+    options.format = format;
+  }
+  const landscape = request.query.landscape;
+  if(landscape) {
+    options.landscape = true;
+  }
+
   const page = await browser.newPage();
   await page.goto(url, {waitUntil: 'networkidle0'});
-  const pdf = await page.pdf();
+  const pdf = await page.pdf(options);
   await browser.close();
 
   response.type('application/pdf').send(pdf);
@@ -334,40 +328,6 @@ app.get('/version', async (request, response) => {
   response.send(ua);
 });
 
-app.get('/gsearch', async (request, response) => {
-  const url = request.query.url;
-  if (!url) {
-    return response.status(400).send(
-      'Please provide a URL. Example: ?url=https://example.com');
-  }
-
-  const browser = response.locals.browser;
-  const results = await gsearch.run(browser, url, `/tmp/trace-${randomUUID()}.json`);
-  await browser.close();
-
-  const style = `
-    <style>
-      body {
-        padding: 1em;
-        font-size: 20px;
-        font-family: sans-serif;
-        font-weight: 300;
-        line-height: 1.4;
-      }
-      .summary a {
-        color: currentcolor;
-        text-decoration: none;
-      }
-      .red {
-        color: #F44336;
-      }
-      a {
-        color: magenta;
-      }
-    </style>
-  `;
-  response.send(style + results);
-});
 
 app.listen(PORT, function() {
   console.log(`App is listening on port ${PORT}`);
