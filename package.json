@@ -14,15 +14,14 @@
     "caniuse-db": "^1.0.30000899",
     "express": "^4.16.4",
     "marked": "^0.5.1",
-    "puppeteer": "^1.9.0",
     "random-uuid": "*",
-    "universal-analytics": "^0.4.20"
+    "shortid": "^2.2.14"
   },
   "engines": {
     "node": ">=8"
   },
   "repository": {
-    "url": "https://github.com/GoogleChromeLabs/pptraas.com"
+    "url": "https://github.com/claytondus/pptraas.com"
   },
   "license": "Apache-2.0",
   "keywords": [
