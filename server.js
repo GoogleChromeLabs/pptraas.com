@@ -172,10 +172,9 @@ app.get('/pdf', async (request, response) => {
   const url = request.query.url;
   if (!url) {
     return response.status(400).send(
-      'Please provide a URL. Example: ?url=https://example.com');
+      'Please provide an URL. Example: ?url=https://example.com');
   }
 
-  const media = request.query.media;
   const orientation = request.query.orientation;
   
   const browser = response.locals.browser;
@@ -184,9 +183,6 @@ app.get('/pdf', async (request, response) => {
     const cookies = extractCookies(request);
 
     const page = await browser.newPage();
-    // TODO Alecs: media don't seem to be taken in account
-    // note: indicators currently works best without any setting
-    // await page.emulateMediaType((media === 'screen' || media === 'print' && media) || null);
     
     await page.setCookie(...cookies);
     await page.goto(url, {waitUntil: 'networkidle0'});

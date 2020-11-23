@@ -4,42 +4,40 @@ Puppeteer as a service
 ## Render
 
 ### Render page as a PNG
-https://pptraas.com/screenshot?url=https://paul.kinlan.me/ (full page)
+http://localhost:4040/screenshot?url=https://howtank.com/ (full page)
 
-https://pptraas.com/screenshot?url=https://developers.google.com&size=400,400
+http://localhost:4040/screenshot?url=https://developers.google.com&size=400,400
 
-https://pptraas.com/screenshot?url=https://www.wikipedia.org&element=.central-featured
+http://localhost:4040/screenshot?url=https://www.wikipedia.org&element=.central-featured
 
 ### Render page as a PDF
-https://pptraas.com/pdf?url=https://paul.kinlan.me/
+http://localhost:4040/pdf?url=https://howtank.com/
 
 ### Render generated static markup of page ("SSR")
-https://pptraas.com/ssr?url=https://angular2-hn.firebaseapp.com/
+http://localhost:4040/ssr?url=https://angular2-hn.firebaseapp.com/
 
 ### Render as Google Search bot
 
 Detects what features a page is using and cross references them with the features
 supported by the [Google Search bot](https://developers.google.com/search/docs/guides/rendering).
 
-https://pptraas.com/gsearch?url=https://paul.kinlan.me/
+http://localhost:4040/gsearch?url=https://howtank.com/
 
 ## Performance
 
 ### Get a timeline trace
 
-https://pptraas.com/trace?url=https://paul.kinlan.me/
+http://localhost:4040/trace?url=https://howtank.com/
 
 #### View the trace in trace-viewer:
 
-https://chromedevtools.github.io/timeline-viewer/?loadTimelineFromURL=https://pptraas.com/trace?url=https://paul.kinlan.me/
+http://chromedevtools.github.io/timeline-viewer/?loadTimelineFromURL=https://localhost:4040/trace?url=https://howtank.com/
 
 ### Get metrics
-https://pptraas.com/metrics?url=https://paul.kinlan.me/
+http://localhost:4040/metrics?url=https://howtank.com/
 
 ## Misc
 
 ### Print UserAgent / Chromium version
-https://pptraas.com/version
+http://localhost:4040/version
 
-----
-[![Deploy to now](https://deploy.now.sh/static/button.svg)](https://deploy.now.sh/?repo=https://github.com/GoogleChromeLabs/pptraas.com) [![Lighthouse score: 100/100](https://lighthouse-badge.appspot.com/?score=100&category=Perf)](https://github.com/ebidel/lighthouse-badge)
