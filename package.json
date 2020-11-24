@@ -1,8 +1,8 @@
 {
   "name": "htmltopdf",
-  "version": "0.0.2-hwt",
+  "version": "1.0.0",
   "private": true,
-  "description": "Puppeteer as a service",
+  "description": "Puppeteer as a service for generating PDFs and screenshots based on HTML page",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
