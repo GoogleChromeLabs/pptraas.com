@@ -24,8 +24,10 @@ const {URL} = require('url');
 const cookieParser = require('cookie-parser')
 
 const PORT = process.env.PORT || 4040;
+const PROPS_ACCESS_TOKEN = 'ACCESS_TOKEN';
 const app = express();
 app.use(cookieParser());
+
 
 // prepare cookies object to be passed to the browser
 const baseCookie = {
@@ -35,6 +37,7 @@ const baseCookie = {
 
 const extractCookies = (req) => (
   Object.keys(req.cookies)
+    .filter(name => name != PROPS_ACCESS_TOKEN)
     .map(name => {
       const value = req.cookies[name];
       return {
@@ -168,6 +171,7 @@ app.get('/screenshot', async (request, response) => {
   await browser.close();
 });
 
+
 app.get('/pdf', async (request, response) => {
   const url = request.query.url;
   if (!url) {
@@ -183,8 +187,17 @@ app.get('/pdf', async (request, response) => {
     const cookies = extractCookies(request);
 
     const page = await browser.newPage();
+
+    const accessToken = request.cookies[PROPS_ACCESS_TOKEN];
     
     await page.setCookie(...cookies);
+
+    if (accessToken) {
+      await page.setExtraHTTPHeaders({
+        'Authorization': `Bearer ${accessToken}`
+      });
+    }
+
     await page.goto(url, {waitUntil: 'networkidle0'});
     const pdf = await page.pdf({
       format: (request.query.format || 'A4'), 
